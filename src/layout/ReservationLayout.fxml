@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.gluonhq.charm.glisten.control.ToggleButtonGroup?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.MaskerPane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hust.UI.ReservationController">
+   <children>
+      <ImageView fitHeight="400.0" fitWidth="715.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../res/flight_bg.jpg" />
+         </image>
+      </ImageView>
+      <Pane fx:id="OrderPane" layoutX="8.0" layoutY="8.0" prefHeight="384.0" prefWidth="583.0">
+         <children>
+            <Pane opacity="0.57" prefHeight="380.0" prefWidth="583.0" style="-fx-background-color: black;" />
+            <ToggleButtonGroup fx:id="tripWayToggleGroup" layoutX="27.0" layoutY="140.0" prefHeight="32.0" prefWidth="209.0">
+               <toggles>
+                  <ToggleButton contentDisplay="TOP" graphicTextGap="1.0" text="Roundtrip">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="tripWayToggleGrouptripWayToggleGroup" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton contentDisplay="TOP" graphicTextGap="1.0" text="One way" toggleGroup="$tripWayToggleGrouptripWayToggleGroup" />
+                  <ToggleButton contentDisplay="TOP" text="Multi-City" toggleGroup="$tripWayToggleGrouptripWayToggleGroup" />
+               </toggles>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </ToggleButtonGroup>
+            <JFXButton layoutX="30.0" layoutY="320.0" style="-fx-background-color: orange;" text="Search" textFill="WHITE" />
+            <Label layoutX="26.0" layoutY="9.0" prefHeight="33.0" prefWidth="162.0" text="Search Flights" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <ToggleButtonGroup fx:id="flightComboToggleGroup" layoutX="26.0" layoutY="54.0" prefHeight="40.0" prefWidth="369.0">
+                <toggles>
+                    <ToggleButton contentDisplay="TOP" text="Flight Only">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../res/flight.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="flightComboToggleGroupflightComboToggleGroup" />
+                     </toggleGroup>
+                    </ToggleButton>
+                    <ToggleButton contentDisplay="TOP" text="Flight + Hotel">
+                     <graphic>
+                        <HBox>
+                           <children>
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/flight.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/hotel.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                     </graphic>
+                    </ToggleButton>
+                    <ToggleButton contentDisplay="TOP" text="Flight + Hotel + Car" toggleGroup="$flightComboToggleGroupflightComboToggleGroup">
+                     <graphic>
+                        <HBox>
+                           <children>
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/flight.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/hotel.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/taxi.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                     </graphic>
+                    </ToggleButton>
+                  <ToggleButton contentDisplay="TOP" layoutX="86.0" layoutY="10.0" text="Flight + Car" toggleGroup="$flightComboToggleGroupflightComboToggleGroup">
+                     <graphic>
+                        <HBox>
+                           <children>
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/flight.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/taxi.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                     </graphic>
+                  </ToggleButton>
+                </toggles>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </ToggleButtonGroup>
+            <ImageView fitHeight="55.0" fitWidth="212.0" layoutX="27.0" layoutY="188.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../res/circletrangle.png" />
+               </image>
+            </ImageView>
+            <BorderPane layoutX="31.0" layoutY="190.0" prefHeight="47.0" prefWidth="201.0">
+               <top>
+                  <Label prefHeight="5.0" prefWidth="208.0" text="Flying from" BorderPane.alignment="CENTER" />
+               </top>
+               <left>
+                  <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                     <image>
+                        <Image url="@../res/location.png" />
+                     </image>
+                  </ImageView>
+               </left>
+               <center>
+                  <JFXTextField promptText="City or airport" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+            <ImageView fitHeight="50.0" fitWidth="220.0" layoutX="318.0" layoutY="186.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../res/circletrangle.png" />
+               </image>
+            </ImageView>
+            <BorderPane layoutX="323.0" layoutY="190.0" prefHeight="47.0" prefWidth="201.0">
+               <top>
+                  <Label prefHeight="5.0" prefWidth="208.0" text="Flying to" BorderPane.alignment="CENTER" />
+               </top>
+               <left>
+                  <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                     <image>
+                        <Image url="@../res/location.png" />
+                     </image>
+                  </ImageView>
+               </left>
+               <center>
+                  <JFXTextField promptText="City or airport" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+            <HBox layoutX="27.0" layoutY="250.0" prefHeight="55.0" prefWidth="570.0">
+               <children>
+                  <BorderPane prefHeight="47.0" prefWidth="152.0">
+                     <top>
+                        <Label prefHeight="5.0" prefWidth="208.0" text="Departing" textFill="#a19e9e" BorderPane.alignment="CENTER" />
+                     </top>
+                     <center>
+                        <DatePicker promptText="mm/dd/yyyy" BorderPane.alignment="CENTER" />
+                     </center>
+                     <left>
+                        <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@../res/calendar.png" />
+                           </image>
+                        </ImageView>
+                     </left>
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </BorderPane>
+                  <BorderPane prefHeight="47.0" prefWidth="152.0">
+                     <top>
+                        <Label prefHeight="5.0" prefWidth="208.0" text="Returning" textFill="#a19e9e" BorderPane.alignment="CENTER" />
+                     </top>
+                     <center>
+                        <DatePicker promptText="mm/dd/yyyy" BorderPane.alignment="CENTER" />
+                     </center>
+                     <left>
+                        <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@../res/calendar.png" />
+                           </image>
+                        </ImageView>
+                     </left>
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </BorderPane>
+                  <BorderPane prefHeight="55.0" prefWidth="235.0">
+                     <top>
+                        <Label prefHeight="18.0" prefWidth="249.0" text="Travelers" textFill="#a19e9e" BorderPane.alignment="CENTER" />
+                     </top>
+                     <left>
+                        <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@../res/people.png" />
+                           </image>
+                        </ImageView>
+                     </left>
+                     <center>
+                        <MenuButton mnemonicParsing="false" prefHeight="28.0" prefWidth="194.0" text="1 Adult" BorderPane.alignment="CENTER">
+                          <items>
+                            <MenuItem mnemonicParsing="false">
+                                 <graphic>
+                                    <HBox prefHeight="30.0" prefWidth="165.0">
+                                       <children>
+                                          <VBox prefWidth="100.0">
+                                             <children>
+                                                <Label text="Adults" />
+                                                <Label>
+                                                   <font>
+                                                      <Font size="11.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="10.0" top="3.0" />
+                                             </HBox.margin>
+                                          </VBox>
+                                          <JFXButton text="-" wrapText="true" />
+                                          <Label text="1" wrapText="true">
+                                             <HBox.margin>
+                                                <Insets top="5.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <JFXButton layoutX="10.0" layoutY="10.0" text="+" wrapText="true" />
+                                       </children>
+                                    </HBox>
+                                 </graphic></MenuItem>
+                            <MenuItem mnemonicParsing="false">
+                                 <graphic>
+                                    <HBox prefHeight="30.0" prefWidth="165.0">
+                                       <children>
+                                          <VBox prefWidth="120.0">
+                                             <children>
+                                                <Label text="Children" />
+                                                <Label text="Ages (2-11)">
+                                                   <font>
+                                                      <Font size="11.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="10.0" top="3.0" />
+                                             </HBox.margin>
+                                          </VBox>
+                                          <JFXButton text="-" wrapText="true" />
+                                          <Label text="1" wrapText="true">
+                                             <HBox.margin>
+                                                <Insets top="5.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <JFXButton layoutX="10.0" layoutY="10.0" text="+" wrapText="true" />
+                                       </children>
+                                    </HBox>
+                                 </graphic></MenuItem>
+                              <MenuItem mnemonicParsing="false">
+                                 <graphic>
+                                    <HBox prefHeight="30.0" prefWidth="165.0">
+                                       <children>
+                                          <VBox prefWidth="120.0">
+                                             <children>
+                                                <Label text="Infants" />
+                                                <Label text="Age under 2">
+                                                   <font>
+                                                      <Font size="11.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="10.0" top="3.0" />
+                                             </HBox.margin>
+                                          </VBox>
+                                          <JFXButton text="-" wrapText="true" />
+                                          <Label text="1" wrapText="true">
+                                             <HBox.margin>
+                                                <Insets top="5.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <JFXButton layoutX="10.0" layoutY="10.0" text="+" wrapText="true" />
+                                       </children>
+                                    </HBox>
+                                 </graphic>
+                              </MenuItem>
+                          </items>
+                        </MenuButton>
+                     </center>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <padding>
+                        <Insets right="15.0" />
+                     </padding>
+                  </BorderPane>
+               </children>
+            </HBox>
+            <Label layoutX="443.0" layoutY="360.0" text="Design by Dou Walker" textFill="WHITE" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </Pane>
+      <MaskerPane layoutX="239.0" layoutY="158.0" text="Searching..." visible="false" />
+      <BorderPane layoutX="8.0" layoutY="8.0" prefHeight="384.0" prefWidth="584.0" visible="false">
+         <top>
+            <VBox prefHeight="77.0" prefWidth="574.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <JFXButton style="-fx-background-color: black;" text="&lt; Back" textFill="WHITE" />
+                        <Label text="Flight Info" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="10.0" top="2.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox prefHeight="298.0" prefWidth="483.0">
+                     <children>
+                        <JFXButton prefWidth="82.0" text="Button" />
+                        <JFXButton layoutX="10.0" layoutY="10.0" prefWidth="82.0" />
+                        <JFXButton layoutX="80.0" layoutY="10.0" prefWidth="82.0" />
+                        <JFXButton layoutX="150.0" layoutY="10.0" prefWidth="82.0" />
+                        <JFXButton layoutX="220.0" layoutY="10.0" prefWidth="82.0" />
+                        <JFXButton layoutX="290.0" layoutY="10.0" prefWidth="82.0" />
+                        <JFXButton layoutX="360.0" layoutY="10.0" prefWidth="82.0" />
+                     </children>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets left="10.0" top="10.0" />
+               </BorderPane.margin>
+            </VBox>
+         </top>
+         <center>
+            <JFXListView BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+      <Pane layoutX="8.0" layoutY="8.0" prefHeight="384.0" prefWidth="583.0" visible="false">
+         <children>
+            <VBox alignment="CENTER" layoutX="192.0" layoutY="92.0" prefHeight="192.0" prefWidth="184.0">
+               <children>
+                  <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../res/finish.png" />
+                     </image>
+                     <VBox.margin>
+                        <Insets bottom="20.0" />
+                     </VBox.margin>
+                  </ImageView>
+                  <Label prefHeight="23.0" prefWidth="224.0" text="订单号:   2134566">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="10.0" layoutY="160.0" prefHeight="23.0" prefWidth="226.0" text="应缴金额: 2230.00元">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+            <JFXButton layoutX="182.0" layoutY="320.0" text="付款">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../res/payment.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </JFXButton>
+            <JFXButton layoutX="322.0" layoutY="320.0" text="返回">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="22.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../res/back2.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </JFXButton>
+         </children>
+      </Pane>
+   </children>
+</Pane>
