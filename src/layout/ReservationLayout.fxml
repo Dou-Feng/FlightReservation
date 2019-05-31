@@ -429,9 +429,9 @@
                         <Insets />
                      </VBox.margin>
                   </HBox>
-                  <HBox prefHeight="298.0" prefWidth="677.0">
+                  <HBox prefHeight="298.0" prefWidth="676.0">
                      <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets right="10.0" top="10.0" />
                      </VBox.margin>
                      <children>
                         <Label alignment="CENTER" minWidth="133.0" prefHeight="35.0" prefWidth="133.0" text="航班">
@@ -453,6 +453,9 @@
                            <font>
                               <Font size="15.0" />
                            </font>
+                           <padding>
+                              <Insets right="10.0" />
+                           </padding>
                         </Label>
                         <Label alignment="CENTER" layoutX="430.0" layoutY="10.0" minWidth="80.0" prefHeight="35.0" prefWidth="85.0" text="商务舱">
                            <font>
@@ -465,6 +468,9 @@
                            </font>
                         </Label>
                      </children>
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
                   </HBox>
                </children>
                <BorderPane.margin>

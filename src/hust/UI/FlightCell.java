@@ -66,6 +66,7 @@ public class FlightCell extends ListCell<Flight> {
                 flightImage.setFitWidth(20.0);
                 flightLabel = new Label(item.getFlightNo());
                 flightLabel.setStyle("-fx-font-size: 14");
+                flightLabel.setTextFill(Color.web("#000000"));
                 flightBox = new HBox();
                 flightBox.setMinWidth(100);
                 flightBox.setAlignment(Pos.CENTER);
@@ -78,6 +79,7 @@ public class FlightCell extends ListCell<Flight> {
                 takeoffBox.setMinWidth(70);
                 takeoffLabel = new Label(String.format("%02d: %02d", item.getTakeoffTime().getHours(), item.getTakeoffTime().getMinutes()));
                 takeoffLabel.setStyle("-fx-font-size: 16");
+                takeoffLabel.setTextFill(Color.web("#000000"));
                 takeoffCityLabel = new Label(item.getTakeoffCity());
                 takeoffCityLabel.setStyle("-fx-font-size:11");
                 takeoffCityLabel.setTextFill(Color.web("#9c9c9c"));
@@ -112,6 +114,7 @@ public class FlightCell extends ListCell<Flight> {
                 landingBox.setAlignment(Pos.CENTER);
                 landingLabel = new Label(String.format("%02d: %02d", item.getLandingTime().getHours(), item.getLandingTime().getMinutes()));
                 landingLabel.setStyle("-fx-font-size: 16");
+                landingLabel.setTextFill(Color.web("#000000"));
                 landingCityLabel = new Label(item.getLandingCity());
                 landingCityLabel.setStyle("-fx-font-size: 11");
                 landingCityLabel.setTextFill(Color.web("#9c9c9c"));

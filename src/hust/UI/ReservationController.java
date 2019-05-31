@@ -1,9 +1,7 @@
 package hust.UI;
 
 import com.gluonhq.charm.glisten.control.ToggleButtonGroup;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import hust.DB.DBConnection;
 import hust.bean.Flight;
 import javafx.animation.KeyFrame;
@@ -19,11 +17,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import org.controlsfx.control.MaskerPane;
@@ -41,6 +38,8 @@ public class ReservationController implements Initializable {
     private Pane spinPane; // 用于过场
     @FXML
     private BorderPane flightPane; // 显示航班信息
+    @FXML
+    private ScrollPane scrollPane; // 滑动pane
     @FXML
     private Pane payPane; // 显示订单金额和付款
     @FXML
@@ -94,14 +93,13 @@ public class ReservationController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // 考虑第一个pane的初始化工作
         // 1. 获得text中出发时间、城市；达到时间城市的信息
-        // 2. 能够处理错误，比如有一个或者多个输入框必要输入没有输入
+        // 2. 能够处理错误，比如有一个或者多个输入框必要输入没有输入，返回一个弹框提示用户输入
         // 3. 能够在Menubutton的下拉菜单中处理人数更新的操作, 并在Menubutton的text处显示人数信息
         // 4. 返程按钮按下后，返程日期需要设计为disable
         // 5. 按下搜索按钮后，需要进行信息的搜集，当前pane隐藏，下一个pane的显示，中间用MaskerPane过渡
         // 6. 考虑场景切换的动画效果
         // 7. 在datePicker中当前日期以前的日期无法选择
         // 8. 点击订单按钮，打开一个新的窗口。当前窗口被取代。（最后实现）
-
         flightList.setItems(flightObservableList);
         // 实现自定义的item
         flightList.setCellFactory(new Callback<ListView<Flight>, ListCell<Flight>>() {
@@ -123,8 +121,13 @@ public class ReservationController implements Initializable {
         childMinusBtn.setDisable(true);
         infantMinusBtn.setDisable(true);
 
+        // disable horizontal scroll (useless)
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-//        switchPane(PaneType.SPIN);
+        // 第二阶段
+        // 点击预订按钮
+        // 在点击预订按钮后，首先需要得知用户选择的航班的信息，（航班号，日期，座位类型，票价等）
     }
 
     @FXML
@@ -148,6 +151,7 @@ public class ReservationController implements Initializable {
         if (!valid) {
             // open a dialog and say sorry
             System.out.println("Debug: Input the right information");
+            showDialog("请输入正确的信息");
             return;
         }
         String takeoffCity = flyFromText.getText();
@@ -156,6 +160,7 @@ public class ReservationController implements Initializable {
         Date returnDate = !returningDate.getEditor().getText().isEmpty()?Date.valueOf(returningDate.getEditor().getText()):null;
         if (takeoffDate == null) {
             System.out.println("Debug: Input right take off time");
+            showDialog("请输入正确的出行时间");
             return ;
         }
         int adult = Integer.valueOf(adultsNumLabel.getText());
@@ -237,6 +242,14 @@ public class ReservationController implements Initializable {
         t2.play();
     }
 
+    private void showDialog(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("信息");
+        alert.setHeaderText("输入错误");
+        alert.setContentText(message);
+        alert.showAndWait();
+
+    }
 
 
     @FXML

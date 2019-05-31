@@ -19,6 +19,7 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/ReservationLayout.fxml"));
             Pane pane = fxmlLoader.load();
             scene = new Scene(pane, pane.getPrefWidth(),pane.getPrefHeight());
+            scene.getStylesheets().add(getClass().getResource("/res/style/list-cell-color.css").toString());
             currentStage = stage;
             currentStage.setTitle("Flight");
             currentStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/res/images/flight.png")));
