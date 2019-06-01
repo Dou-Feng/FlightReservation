@@ -17,6 +17,20 @@ public class Flight {
     private float BCPrice;
     private float ECPrice;
 
+    public Flight() {
+        this.flightNo = "MU2460";
+        this.takeoffTime = new Time(8, 10, 0);
+        this.landingTime = new Time(10, 25, 0);
+        this.duration = new Time(2, 15,0);
+        this.takeoffCity = "北京";
+        this.landingCity = "武汉";
+        this.FCRemain = 0;
+        this.FCPrice = 10000.0f;
+        this.BCRemain = 5;
+        this.BCPrice = 2000.0f;
+        this.ECRemain = 120;
+        this.ECPrice = 1189.0f;
+    }
     public Flight(String flightNo, String takeoffCity, String landingCity, Time takeoffTime, Time landingTime,
                   Time duration, int FCRemain, int BCRemain, int ECRemain, float FCPrice, float BCPrice, float ECPrice) {
         this.flightNo = flightNo;

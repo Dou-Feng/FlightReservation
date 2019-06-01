@@ -25,10 +25,10 @@
             <Image url="@../res/images/flight_bg.jpg" />
          </image>
       </ImageView>
-      <Pane fx:id="orderPane" layoutX="8.0" layoutY="8.0" prefHeight="454.0" prefWidth="694.0">
+      <Pane fx:id="orderPane" layoutX="8.0" layoutY="8.0" prefHeight="454.0" prefWidth="694.0" visible="false">
          <children>
             <Pane opacity="0.57" prefHeight="454.0" prefWidth="694.0" style="-fx-background-color: black;" />
-            <Label layoutX="547.0" layoutY="415.0" prefHeight="17.0" prefWidth="138.0" text="Design by Dou Walker" textFill="WHITE" />
+            <Label layoutX="587.0" layoutY="415.0" prefHeight="17.0" prefWidth="98.0" text="Design by D.W." textFill="WHITE" />
             <JFXButton fx:id="UserOrderBtn" layoutX="613.0" layoutY="25.0" prefHeight="40.0" prefWidth="61.0" style="-fx-border-color: #3b89c5;" text="..." textFill="WHITE">
                <graphic>
                   <ImageView fitHeight="28.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
@@ -39,14 +39,14 @@
                </graphic>
             </JFXButton>
             <JFXButton fx:id="searchBtn" layoutX="40.0" layoutY="388.0" onAction="#searchFlight" style="-fx-background-color: orange;" text="Search" textFill="WHITE" />
-            <Label layoutX="27.0" layoutY="27.0" prefHeight="33.0" prefWidth="162.0" text="Search Flights" textAlignment="CENTER" textFill="WHITE">
+            <Label layoutX="27.0" layoutY="27.0" prefHeight="33.0" prefWidth="162.0" text="航班查询" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
             <ToggleButtonGroup fx:id="flightComboToggleGroup" layoutX="27.0" layoutY="76.0" prefHeight="40.0" prefWidth="369.0">
                 <toggles>
-                    <ToggleButton contentDisplay="TOP" style="-fx-background-color: #3b89c5 #3b89c5;" text="Flight Only">
+                    <ToggleButton contentDisplay="TOP" minWidth="70.0" prefWidth="80.0" style="-fx-background-color: #3b89c5 #3b89c5;" text="航班">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -55,7 +55,7 @@
                         </ImageView>
                      </graphic>
                     </ToggleButton>
-                    <ToggleButton contentDisplay="TOP" style="-fx-background-color: white;" text="Flight + Hotel">
+                    <ToggleButton contentDisplay="TOP" style="-fx-background-color: white;" text="航班 + 酒店">
                      <graphic>
                         <HBox>
                            <children>
@@ -73,7 +73,7 @@
                         </HBox>
                      </graphic>
                     </ToggleButton>
-                    <ToggleButton contentDisplay="TOP" style="-fx-background-color: white;" text="Flight + Hotel + Car">
+                    <ToggleButton contentDisplay="TOP" style="-fx-background-color: white;" text="航班 + 酒店 + 乘车">
                      <graphic>
                         <HBox>
                            <children>
@@ -96,7 +96,7 @@
                         </HBox>
                      </graphic>
                     </ToggleButton>
-                  <ToggleButton contentDisplay="TOP" layoutX="86.0" layoutY="10.0" style="-fx-background-color: white;" text="Flight + Car">
+                  <ToggleButton contentDisplay="TOP" layoutX="86.0" layoutY="10.0" style="-fx-background-color: white;" text="航班 + 乘车">
                      <graphic>
                         <HBox>
                            <children>
@@ -121,8 +121,8 @@
             </ToggleButtonGroup>
             <ToggleButtonGroup fx:id="tripWayToggleGroup" layoutX="27.0" layoutY="171.0" prefHeight="32.0" prefWidth="209.0">
                <toggles>
-                  <ToggleButton fx:id="roundTripBtn" contentDisplay="TOP" graphicTextGap="1.0" onAction="#roundTripSelected" selected="true" style="-fx-background-color: #3b89c5;" text="Roundtrip" />
-                  <ToggleButton fx:id="oneWayBtn" contentDisplay="TOP" graphicTextGap="1.0" onAction="#oneWaySelected" style="-fx-background-color: white;" text="One way" />
+                  <ToggleButton fx:id="roundTripBtn" contentDisplay="TOP" graphicTextGap="1.0" minWidth="60.0" onAction="#roundTripSelected" prefWidth="80.0" selected="true" style="-fx-background-color: #3b89c5;" text="往返" />
+                  <ToggleButton fx:id="oneWayBtn" contentDisplay="TOP" graphicTextGap="1.0" minWidth="60.0" onAction="#oneWaySelected" prefWidth="80.0" style="-fx-background-color: white;" text="单程" />
                </toggles>
                <opaqueInsets>
                   <Insets />
@@ -135,7 +135,7 @@
             </ImageView>
             <BorderPane layoutX="31.0" layoutY="230.0" prefHeight="47.0" prefWidth="201.0">
                <top>
-                  <Label prefHeight="5.0" prefWidth="208.0" text="Flying from" BorderPane.alignment="CENTER" />
+                  <Label prefHeight="5.0" prefWidth="208.0" text="出发" BorderPane.alignment="CENTER" />
                </top>
                <left>
                   <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
@@ -145,7 +145,7 @@
                   </ImageView>
                </left>
                <center>
-                  <JFXTextField fx:id="flyFromText" promptText="City or airport" BorderPane.alignment="CENTER" />
+                  <JFXTextField fx:id="flyFromText" promptText="城市或机场" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
             <ImageView fitHeight="50.0" fitWidth="220.0" layoutX="318.0" layoutY="226.0" pickOnBounds="true" preserveRatio="true">
@@ -155,7 +155,7 @@
             </ImageView>
             <BorderPane layoutX="323.0" layoutY="230.0" prefHeight="47.0" prefWidth="201.0">
                <top>
-                  <Label prefHeight="5.0" prefWidth="208.0" text="Flying to" BorderPane.alignment="CENTER" />
+                  <Label prefHeight="5.0" prefWidth="208.0" text="到达" BorderPane.alignment="CENTER" />
                </top>
                <left>
                   <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
@@ -165,12 +165,12 @@
                   </ImageView>
                </left>
                <center>
-                  <JFXTextField fx:id="flyToText" promptText="City or airport" BorderPane.alignment="CENTER" />
+                  <JFXTextField fx:id="flyToText" promptText="城市或机场" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
             <BorderPane layoutX="372.0" layoutY="300.0" prefHeight="55.0" prefWidth="273.0">
                <top>
-                  <Label prefHeight="18.0" prefWidth="249.0" text="Travelers" textFill="#a19e9e" BorderPane.alignment="CENTER" />
+                  <Label prefHeight="18.0" prefWidth="249.0" text="旅客人数" textFill="#a19e9e" BorderPane.alignment="CENTER" />
                </top>
                <left>
                   <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
@@ -183,7 +183,7 @@
                   <Insets right="15.0" />
                </padding>
                <center>
-                  <JFXButton fx:id="travelerBtn" alignment="TOP_LEFT" onAction="#travelerBtnClicked" prefHeight="27.0" prefWidth="231.0" style="-fx-background-color: white;" text="1 adult" BorderPane.alignment="CENTER">
+                  <JFXButton fx:id="travelerBtn" alignment="TOP_LEFT" onAction="#travelerBtnClicked" prefHeight="27.0" prefWidth="231.0" style="-fx-background-color: white;" text="1 成年人" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets top="5.0" />
                      </BorderPane.margin>
@@ -196,7 +196,7 @@
                            <children>
                               <VBox prefHeight="31.0" prefWidth="171.0">
                                  <children>
-                                    <Label text="Adults" />
+                                    <Label text="成人" />
                                     <Label>
                                        <font>
                                           <Font size="11.0" />
@@ -248,8 +248,8 @@
                            <children>
                               <VBox prefHeight="31.0" prefWidth="170.0">
                                  <children>
-                                    <Label text="Children" />
-                                    <Label text="Ages (2-11)">
+                                    <Label text="小孩" />
+                                    <Label text="年龄(2-11)">
                                        <font>
                                           <Font size="11.0" />
                                        </font>
@@ -297,8 +297,8 @@
                            <children>
                               <VBox prefHeight="31.0" prefWidth="207.0">
                                  <children>
-                                    <Label text="Infants" />
-                                    <Label text="Age under 2">
+                                    <Label text="婴儿" />
+                                    <Label text="年龄2岁以下">
                                        <font>
                                           <Font size="11.0" />
                                        </font>
@@ -356,10 +356,10 @@
                <children>
                   <BorderPane prefHeight="47.0" prefWidth="152.0">
                      <top>
-                        <Label prefHeight="5.0" prefWidth="208.0" text="Departing" textFill="#a19e9e" BorderPane.alignment="CENTER" />
+                        <Label prefHeight="5.0" prefWidth="208.0" text="启程日期" textFill="#a19e9e" BorderPane.alignment="CENTER" />
                      </top>
                      <center>
-                        <DatePicker fx:id="departingDate" promptText="mm/dd/yyyy" style="-fx-background-color: white;" BorderPane.alignment="CENTER" />
+                        <DatePicker fx:id="departingDate" promptText="yyyy-mm-dd" style="-fx-background-color: white;" BorderPane.alignment="CENTER" />
                      </center>
                      <left>
                         <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
@@ -374,10 +374,10 @@
                   </BorderPane>
                   <BorderPane prefHeight="47.0" prefWidth="152.0">
                      <top>
-                        <Label prefHeight="5.0" prefWidth="208.0" text="Returning" textFill="#a19e9e" BorderPane.alignment="CENTER" />
+                        <Label prefHeight="5.0" prefWidth="208.0" text="返程日期" textFill="#a19e9e" BorderPane.alignment="CENTER" />
                      </top>
                      <center>
-                        <DatePicker fx:id="returningDate" promptText="mm/dd/yyyy" style="-fx-background-color: white;" BorderPane.alignment="CENTER" />
+                        <DatePicker fx:id="returningDate" promptText="yyyy-mm-dd" style="-fx-background-color: white;" BorderPane.alignment="CENTER" />
                      </center>
                      <left>
                         <ImageView fitHeight="18.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
@@ -399,10 +399,10 @@
       </Pane>
       <Pane fx:id="spinPane" prefHeight="474.0" prefWidth="711.0" visible="false">
          <children>
-            <MaskerPane fx:id="maskerPane" layoutX="295.0" layoutY="173.0" text="Searching..." />
+            <MaskerPane fx:id="maskerPane" layoutX="287.0" layoutY="174.0" minHeight="127.0" minWidth="138.0" prefHeight="127.0" prefWidth="138.0" text="   请等候...   " />
          </children>
       </Pane>
-      <BorderPane fx:id="flightPane" layoutX="8.0" layoutY="8.0" prefHeight="454.0" prefWidth="694.0" visible="false">
+      <BorderPane fx:id="flightPane" layoutX="8.0" layoutY="8.0" prefHeight="454.0" prefWidth="694.0">
          <top>
             <VBox prefHeight="77.0" prefWidth="574.0" BorderPane.alignment="CENTER">
                <children>
@@ -434,17 +434,17 @@
                         <Insets right="10.0" top="10.0" />
                      </VBox.margin>
                      <children>
-                        <Label alignment="CENTER" minWidth="133.0" prefHeight="35.0" prefWidth="133.0" text="航班">
+                        <Label alignment="CENTER" minWidth="95.0" prefHeight="35.0" prefWidth="103.0" text="航班">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Label alignment="CENTER" layoutX="10.0" layoutY="10.0" minWidth="124.0" prefHeight="35.0" prefWidth="124.0" text="起飞时间">
+                        <Label alignment="CENTER" layoutX="10.0" layoutY="10.0" minWidth="124.0" prefHeight="35.0" prefWidth="126.0" text="起飞时间">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Label alignment="CENTER" layoutX="150.0" layoutY="10.0" minWidth="140.0" prefHeight="38.0" prefWidth="100.0" text="到达时间">
+                        <Label alignment="CENTER" layoutX="150.0" layoutY="10.0" minWidth="140.0" prefHeight="35.0" prefWidth="147.0" text="到达时间">
                            <font>
                               <Font size="15.0" />
                            </font>

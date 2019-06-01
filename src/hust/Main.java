@@ -1,23 +1,25 @@
 package hust;
 
 import hust.DB.DBConnection;
+import hust.UI.ReservationController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Main extends Application {
     public static Scene scene = null;
     public static Stage currentStage = null;
-    public static boolean isPatient = true;
-    public static String id;
     @Override
     public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/ReservationLayout.fxml"));
             Pane pane = fxmlLoader.load();
+            ReservationController.controller = fxmlLoader.getController();
             scene = new Scene(pane, pane.getPrefWidth(),pane.getPrefHeight());
             scene.getStylesheets().add(getClass().getResource("/res/style/list-cell-color.css").toString());
             currentStage = stage;
@@ -29,6 +31,12 @@ public class Main extends Application {
         }   catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setWindowToCenter() {
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        Main.currentStage.setX((screenBounds.getWidth() - scene.getWidth())/2);
+        Main.currentStage.setY((screenBounds.getHeight() - scene.getHeight())/2);
     }
 
 

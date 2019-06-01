@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXCheckBox?>
-<?import com.jfoenix.controls.JFXListCell?>
 <?import com.jfoenix.controls.JFXListView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -16,18 +13,18 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:controller="hust.UI.InfoController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="598.0" prefWidth="600.0" style="-fx-background-color: rgb(255,255,255);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="514.0" prefWidth="600.0" style="-fx-background-color: rgb(255,255,255);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hust.UI.InfoController">
    <children>
-      <VBox prefHeight="582.0" prefWidth="600.0">
+      <VBox prefHeight="506.0" prefWidth="600.0">
          <children>
-            <HBox prefHeight="32.0" prefWidth="333.0">
+            <HBox prefHeight="42.0" prefWidth="600.0">
                <children>
-                  <JFXButton prefWidth="89.0" style="-fx-background-color: orange;" text="重选航班">
+                  <JFXButton buttonType="RAISED" onAction="#backToFlight" prefHeight="35.0" prefWidth="89.0" style="-fx-background-color: orange;" text="重选航班">
                      <font>
                         <Font size="12.0" />
                      </font>
                      <HBox.margin>
-                        <Insets left="5.0" right="30.0" top="3.0" />
+                        <Insets bottom="2.0" left="5.0" right="30.0" top="10.0" />
                      </HBox.margin>
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -37,251 +34,137 @@
                         </ImageView>
                      </graphic>
                   </JFXButton>
-                  <VBox alignment="CENTER" prefHeight="35.0" prefWidth="156.0">
+                  <HBox alignment="CENTER" prefHeight="49.0" prefWidth="108.0">
                      <children>
-                        <Label alignment="CENTER" text="武汉">
+                        <ImageView fitHeight="25.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../res/images/flight_icon.png" />
+                           </image>
+                        </ImageView>
+                        <Label fx:id="flightLabel" text="CZ770">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Label layoutX="10.0" layoutY="10.0" text="13:30">
+                     </children>
+                  </HBox>
+                  <VBox alignment="CENTER" prefHeight="68.0" prefWidth="50.0">
+                     <children>
+                        <Label fx:id="takeoffLabel" text="17:30">
                            <font>
-                              <Font size="12.0" />
+                              <Font size="16.0" />
                            </font>
                         </Label>
+                        <Label fx:id="takeoffCityLabel" text="武汉" />
                      </children>
                   </VBox>
-                  <ImageView fitHeight="26.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../res/images/Arrow.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets top="5.0" />
-                     </HBox.margin>
-                  </ImageView>
-                  <VBox alignment="CENTER" layoutX="128.0" layoutY="10.0" prefHeight="35.0" prefWidth="172.0">
+                  <VBox alignment="CENTER" prefHeight="20.0" prefWidth="100.0">
                      <children>
-                        <Label alignment="CENTER" text="上海浦东">
+                        <ImageView fitHeight="50.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../res/images/arrow_from_to.png" />
+                           </image>
+                        </ImageView>
+                        <HBox alignment="CENTER" prefHeight="20.0" prefWidth="91.0">
+                           <children>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../res/images/clock.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="durationLabel" minWidth="60.0" prefHeight="20.0" prefWidth="65.0" text="2h0m" />
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="10.0" left="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets top="20.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER" layoutX="110.0" layoutY="10.0" prefHeight="68.0" prefWidth="50.0">
+                     <children>
+                        <Label fx:id="landingLabel" text="19:30">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Label layoutX="10.0" layoutY="10.0" text="15:30">
-                           <font>
-                              <Font size="12.0" />
-                           </font>
-                        </Label>
+                        <Label fx:id="landingCityLabel" text="上海" />
                      </children>
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
                   </VBox>
                </children>
             </HBox>
-            <Label prefHeight="19.0" prefWidth="617.0" style="-fx-background-color: #3b89c5;" text="Contact's info" textFill="WHITE">
+            <Label prefHeight="19.0" prefWidth="616.0" style="-fx-background-color: #3b89c5;" text="填写乘机人信息" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <JFXListCell prefHeight="130.0" prefWidth="617.0">
-               <graphic>
-                  <VBox prefHeight="83.0" prefWidth="226.0" style="-fx-background-color: rgb(247,250,252);">
-                     <children>
-                        <Label style="-fx-padding:10;" text="Contact">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <HBox prefWidth="200.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="*Name">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField prefHeight="27.0" prefWidth="285.0">
-                                 <HBox.margin>
-                                    <Insets left="10.0" top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="48.0" prefWidth="200.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="*Phone">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField prefHeight="27.0" prefWidth="285.0">
-                                 <HBox.margin>
-                                    <Insets left="7.0" top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </graphic>
-            </JFXListCell>
-            <Label prefHeight="19.0" prefWidth="616.0" style="-fx-background-color: #3b89c5;" text="Passenger's info" textFill="WHITE">
+            <ScrollPane prefHeight="401.0" prefWidth="600.0">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <content>
+                  <JFXListView fx:id="passengerList" prefHeight="243.0" prefWidth="592.0" />
+               </content>
+            </ScrollPane>
+            <Label prefHeight="26.0" prefWidth="600.0" style="-fx-background-color: #3b89c5;" text="填写联系人信息" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <JFXListView prefHeight="0.0" prefWidth="582.0" />
-            <JFXListCell prefHeight="168.0" prefWidth="633.0">
-               <graphic>
-                  <VBox style="-fx-background-color: rgb(247,250,252);">
+            <VBox prefHeight="120.0" prefWidth="600.0" style="-fx-background-color: rgb(247,250,252);">
+               <children>
+                  <Label alignment="CENTER" prefHeight="28.0" prefWidth="80.0" style="-fx-padding:10;" text="联系人">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <HBox prefWidth="200.0">
                      <children>
-                        <Label style="-fx-padding:10;" text="First passenger">
+                        <Label prefHeight="38.0" prefWidth="79.0" style="-fx-padding:10;" text="*姓名">
                            <font>
                               <Font size="14.0" />
                            </font>
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
                         </Label>
-                        <HBox prefWidth="200.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="*Name">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField prefHeight="27.0" prefWidth="385.0">
-                                 <HBox.margin>
-                                    <Insets left="10.0" top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="38.0" prefWidth="565.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="Type">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <JFXCheckBox text="Adults (≥12)">
-                                 <HBox.margin>
-                                    <Insets left="20.0" top="10.0" />
-                                 </HBox.margin>
-                              </JFXCheckBox>
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="48.0" prefWidth="200.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="*Cer type">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <MenuButton mnemonicParsing="false" text="ID card">
-                                 <items>
-                                    <MenuItem mnemonicParsing="false" text="ID card" />
-                                    <MenuItem mnemonicParsing="false" text="passport" />
-                                 </items>
-                                 <HBox.margin>
-                                    <Insets right="10.0" top="5.0" />
-                                 </HBox.margin>
-                              </MenuButton>
-                              <TextField prefHeight="27.0" prefWidth="285.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                        </HBox>
+                        <TextField fx:id="contactNameText" prefHeight="27.0" prefWidth="285.0">
+                           <HBox.margin>
+                              <Insets left="10.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
                      </children>
-                  </VBox>
-               </graphic>
-            </JFXListCell>
-            <JFXListCell layoutX="10.0" layoutY="215.0" prefHeight="168.0" prefWidth="633.0">
-               <graphic>
-                  <VBox style="-fx-background-color: rgb(247,250,252);">
+                  </HBox>
+                  <HBox layoutX="10.0" layoutY="48.0" prefWidth="200.0">
                      <children>
-                        <Label style="-fx-padding:10;" text="First passenger">
+                        <Label style="-fx-padding:10;" text="*电话号码">
                            <font>
                               <Font size="14.0" />
                            </font>
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
                         </Label>
-                        <HBox prefWidth="200.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="*Name">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField prefHeight="27.0" prefWidth="385.0">
-                                 <HBox.margin>
-                                    <Insets left="10.0" top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="38.0" prefWidth="565.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="Type">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <JFXCheckBox text="Adults (≥12)">
-                                 <HBox.margin>
-                                    <Insets left="20.0" top="10.0" />
-                                 </HBox.margin>
-                              </JFXCheckBox>
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="48.0" prefWidth="200.0">
-                           <children>
-                              <Label style="-fx-padding:10;" text="*Cer type">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                                 <HBox.margin>
-                                    <Insets left="5.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <MenuButton mnemonicParsing="false" text="ID card">
-                                 <items>
-                                    <MenuItem mnemonicParsing="false" text="ID card" />
-                                    <MenuItem mnemonicParsing="false" text="passport" />
-                                 </items>
-                                 <HBox.margin>
-                                    <Insets right="10.0" top="5.0" />
-                                 </HBox.margin>
-                              </MenuButton>
-                              <TextField prefHeight="27.0" prefWidth="285.0">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children>
-                        </HBox>
+                        <TextField fx:id="contactPhoneText" prefHeight="27.0" prefWidth="285.0">
+                           <HBox.margin>
+                              <Insets left="7.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
                      </children>
-                  </VBox>
-               </graphic>
-            </JFXListCell>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
             <HBox alignment="CENTER" prefHeight="29.0" prefWidth="430.0">
                <children>
-                  <JFXButton alignment="CENTER" buttonType="RAISED" style="-fx-background-color: orange;" text="Add passenger">
+                  <JFXButton alignment="CENTER" buttonType="RAISED" onAction="#addPassenger" style="-fx-background-color: orange;" text="添加乘客">
                      <font>
                         <Font size="15.0" />
                      </font>
@@ -289,20 +172,20 @@
                         <Insets left="220.0" />
                      </HBox.margin>
                   </JFXButton>
-                  <JFXButton buttonType="RAISED" style="-fx-background-color: orange;" text="OK">
+                  <JFXButton buttonType="RAISED" onAction="#confirm" style="-fx-background-color: orange;" text="确认">
                      <font>
                         <Font size="15.0" />
                      </font>
                      <HBox.margin>
-                        <Insets left="180.0" />
+                        <Insets left="160.0" />
                      </HBox.margin>
                   </JFXButton>
                </children>
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
             </HBox>
          </children>
-         <padding>
-            <Insets top="10.0" />
-         </padding>
       </VBox>
    </children>
 </Pane>

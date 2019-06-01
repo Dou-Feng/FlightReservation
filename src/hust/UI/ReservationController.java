@@ -32,16 +32,17 @@ import java.sql.*;
 import java.util.ResourceBundle;
 
 public class ReservationController implements Initializable {
-    @FXML
-    private Pane orderPane; // 查询pane，处理查询的事务
-    @FXML
-    private Pane spinPane; // 用于过场
-    @FXML
-    private BorderPane flightPane; // 显示航班信息
+    public static ReservationController controller = null; // 单例模式
+
+    public Pane orderPane; // 查询pane，处理查询的事务
+
+    public Pane spinPane; // 用于过场
+
+    public BorderPane flightPane; // 显示航班信息
     @FXML
     private ScrollPane scrollPane; // 滑动pane
-    @FXML
-    private Pane payPane; // 显示订单金额和付款
+
+    public Pane payPane; // 显示订单金额和付款
     @FXML
     private JFXButton UserOrderBtn; // 用户的订单信息按钮，按下可以打开一个新的窗口
                                     // 显示用户的订单信息和通知信息
@@ -83,6 +84,7 @@ public class ReservationController implements Initializable {
     @FXML
     private Label infantsNumLabel;
 
+    public static Date takeoffDate;
 
     @FXML
     private JFXListView<Flight> flightList; // 显示航班信息
@@ -115,7 +117,8 @@ public class ReservationController implements Initializable {
             }
 
         });
-
+        // for debug
+        flightObservableList.add(new Flight());
         // 初始按钮的一些设置
         adultMinusBtn.setDisable(true);
         childMinusBtn.setDisable(true);
@@ -177,6 +180,7 @@ public class ReservationController implements Initializable {
 //        System.out.println("debug: flight observable before clear list item number:" + flightObservableList.size());
         flightList.getItems().clear(); // 清除列表项
 
+        ReservationController.takeoffDate = takeoffDate; // 设置全局变量用来处理订单信息
 //        System.out.println("debug: flight observable list item number:" + flightObservableList.size());
         Platform.runLater(new Runnable() {
             @Override
@@ -222,7 +226,7 @@ public class ReservationController implements Initializable {
     }
 
 
-    private void switchAnimation(Pane p1, Pane p2) {
+    public void switchAnimation(Pane p1, Pane p2) {
 
         KeyValue p1Opacity = new KeyValue(p1.opacityProperty(), 0.0);
         KeyValue p2Opacity = new KeyValue(p2.opacityProperty(), 1.0);
@@ -242,7 +246,7 @@ public class ReservationController implements Initializable {
         t2.play();
     }
 
-    private void showDialog(String message) {
+    public static void showDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("信息");
         alert.setHeaderText("输入错误");
@@ -375,26 +379,18 @@ public class ReservationController implements Initializable {
         int infantNum = Integer.valueOf(infantsNumLabel.getText());
         StringBuilder result = new StringBuilder();
         result.append(adultNum);
-        if (adultNum != 1)
-            result.append(" adults");
-        else
-            result.append(" adult");
+
+            result.append("名成人");
         if (childrenNum > 0) {
             result.append(", ");
             result.append(childrenNum);
-            if (childrenNum != 1)
-                result.append(" children");
-            else
-                result.append(" child");
+            result.append("名小孩");
 
         }
         if (infantNum > 0) {
             result.append(", ");
             result.append(infantNum);
-            if (infantNum != 1)
-                result.append(" infants");
-            else
-                result.append(" infant");
+            result.append("名婴儿");
         }
         travelerBtn.setText(result.toString());
     }
