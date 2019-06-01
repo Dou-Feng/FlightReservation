@@ -10,6 +10,8 @@ public class Passenger {
 
     public Passenger(int no) {
         No = String.valueOf(no);
+        cerType = (short) 1;
+        pType = (short) 1;
     }
     public Passenger(String name, short cerType, String cerNo, short pType) {
         this.name = name;
@@ -37,6 +39,10 @@ public class Passenger {
 
     public String getNo() {
         return No;
+    }
+
+    public boolean isValid() {
+        return !(cerNo == null || cerNo.equals("")) && !(name == null || name.equals(""));
     }
 
     public void setNo(String no) {

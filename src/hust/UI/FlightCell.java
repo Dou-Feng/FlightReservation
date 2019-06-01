@@ -263,24 +263,14 @@ public class FlightCell extends ListCell<Flight> {
         ReservationController.controller.switchAnimation(ReservationController.controller.flightPane,
                     ReservationController.controller.spinPane);
         try {
-            if (InfoController.infoScene == null) {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/InfoLayout.fxml"));
-                Pane pane = fxmlLoader.load();
-                Scene scene = new Scene(pane, pane.getPrefWidth(), pane.getPrefHeight());
-                scene.getStylesheets().add(getClass().getResource("/res/style/list-cell-color.css").toString());
-                InfoController.infoScene = scene;
-                InfoController.controller =  fxmlLoader.getController();
-            }
-            InfoController.controller.setFlightLabel(flightLabel.getText());
-            InfoController.controller.setTakeoffLabel(takeoffLabel.getText());
-            InfoController.controller.setTakeoffCityLabel(takeoffCityLabel.getText());
-            InfoController.controller.setLandingLabel(landingLabel.getText());
-            InfoController.controller.setLandingCityLabel(landingCityLabel.getText());
-            InfoController.controller.setDurationLabel(durationLabel.getText());
-
-            Main.currentStage.setScene(InfoController.infoScene);
-            Main.setWindowToCenter();
-            Main.currentStage.show();
+            ReservationController.controller.setFlightLabel(flightLabel.getText());
+            ReservationController.controller.setTakeoffLabel(takeoffLabel.getText());
+            ReservationController.controller.setTakeoffCityLabel(takeoffCityLabel.getText());
+            ReservationController.controller.setLandingLabel(landingLabel.getText());
+            ReservationController.controller.setLandingCityLabel(landingCityLabel.getText());
+            ReservationController.controller.setDurationLabel(durationLabel.getText());
+            ReservationController.controller.switchAnimation(ReservationController.controller.spinPane,
+                    ReservationController.controller.infoPane);
         } catch (Exception e) {
             e.printStackTrace();
         }

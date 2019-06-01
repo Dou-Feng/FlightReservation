@@ -3,7 +3,9 @@ package hust.UI;
 import com.gluonhq.charm.glisten.control.ToggleButtonGroup;
 import com.jfoenix.controls.*;
 import hust.DB.DBConnection;
+import hust.Main;
 import hust.bean.Flight;
+import hust.bean.Passenger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -39,6 +41,8 @@ public class ReservationController implements Initializable {
     public Pane spinPane; // 用于过场
 
     public BorderPane flightPane; // 显示航班信息
+
+    public Pane infoPane; //
     @FXML
     private ScrollPane scrollPane; // 滑动pane
 
@@ -91,6 +95,32 @@ public class ReservationController implements Initializable {
 
     private ObservableList<Flight> flightObservableList = FXCollections.observableArrayList();
 
+    @FXML
+    private Label flightLabel;
+    @FXML
+    private Label takeoffLabel;
+    @FXML
+    private Label takeoffCityLabel;
+    @FXML
+    private Label landingLabel;
+    @FXML
+    private Label landingCityLabel;
+    @FXML
+    private Label durationLabel;
+
+
+    @FXML
+    private TextField contactNameText;
+    @FXML
+    private TextField contactPhoneText;
+
+    public JFXListView<Passenger> passengerList;
+
+    public static short passengerIndex = 0;
+
+    private ObservableList<Passenger> passengerObservableList = FXCollections.observableArrayList();
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // 考虑第一个pane的初始化工作
@@ -131,6 +161,14 @@ public class ReservationController implements Initializable {
         // 第二阶段
         // 点击预订按钮
         // 在点击预订按钮后，首先需要得知用户选择的航班的信息，（航班号，日期，座位类型，票价等）
+        passengerList.setItems(passengerObservableList);
+        addPassenger(null); // 添加一个乘客
+        passengerList.setCellFactory(new Callback<ListView<Passenger>, ListCell<Passenger>>() {
+            @Override
+            public ListCell<Passenger> call(ListView<Passenger> param) {
+                return new PassengerCell();
+            }
+        });
     }
 
     @FXML
@@ -350,7 +388,6 @@ public class ReservationController implements Initializable {
         handlePlusChildAndInfant((char)2);
 
     }
-
     private void handlePlusChildAndInfant(char a) {
         int adultNum = Integer.valueOf(adultsNumLabel.getText());
         int childrenNum = Integer.valueOf(childrenNumLabel.getText());
@@ -380,7 +417,7 @@ public class ReservationController implements Initializable {
         StringBuilder result = new StringBuilder();
         result.append(adultNum);
 
-            result.append("名成人");
+        result.append("名成人");
         if (childrenNum > 0) {
             result.append(", ");
             result.append(childrenNum);
@@ -394,6 +431,110 @@ public class ReservationController implements Initializable {
         }
         travelerBtn.setText(result.toString());
     }
+
+
+    // -----------------------------info implements ------------------------------
+
+    @FXML
+    // 添加乘客信息项目item
+    protected void addPassenger(ActionEvent event) {
+        if(passengerIndex >= 9) {
+            ReservationController.showDialog("不能再添加乘机人");
+        } else {
+            passengerObservableList.add(new Passenger(passengerIndex++));
+        }
+    }
+
+    @FXML
+    // 确认
+    // 4个方面工作：
+    // 1. 检查乘客信息输入是否合法，如果不合法（在插入到数据库中报错）需要进行弹窗提醒
+    // 2. 自动生成订单号，把联系人的姓名、电话、还有订单日期等信息存入数据库
+    // 3. 插入机票信息，自动生成机票编号；
+    // 4. 生成账单，根据数据库中的数据和用户输入的信息（座位类型、乘客数、乘客类型），查询座位表得到价格
+    //    然后生成最后的账单。
+    // 这里涉及的4张表的插入，所以需要事务来提供进行一致性和完整性的保证
+    protected void confirm(ActionEvent event) {
+        if (contactNameText.getText().isEmpty() || contactPhoneText.getText().isEmpty()) {
+            ReservationController.showDialog("请填写联系人信息");
+            return;
+        }
+        int validPassengerNum = 0;
+        for (Passenger p : passengerObservableList) {
+            if (p.isValid())
+                validPassengerNum++;
+            else {
+                passengerObservableList.remove(p); // 去掉无效的乘客信息
+            }
+        }
+        if (validPassengerNum == 0) {
+            ReservationController.showDialog("乘客人数至少为1");
+            return;
+        }
+        // 开始数据库操作
+        Connection conn = null;
+        try {
+            // 首先生成乘客的信息表项
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false); // 取消自动提交
+            String sqlInsert = "insert into Passenger values(?,?,?,?,?);";
+//            int startNo =
+//            for (Passenger p : passengerObservableList) {
+//                PreparedStatement pstmt = conn.prepareStatement(sqlInsert);
+//                pstmt.setInt(1, );
+//            }
+
+
+        } catch (SQLException e) {
+            System.out.println("debug: sql insert fail. rollback");
+            try {
+                conn.rollback();
+            } catch (SQLException c) {
+                System.out.println("debug: rollback fail, T_T");
+                Platform.exit(); // crash!!!
+            }
+        }
+    }
+
+    @FXML
+    protected void backToFlight(ActionEvent event) {
+        try {
+            clearText();
+            switchAnimation(infoPane, flightPane);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void clearText() {
+        contactNameText.clear();
+        contactPhoneText.clear();
+        passengerObservableList.clear();
+        passengerIndex = 0;
+        addPassenger(null);
+
+    }
+    public void setFlightLabel(String text) {
+        flightLabel.setText(text);
+    }
+
+    public void setTakeoffLabel(String text) {
+        takeoffLabel.setText(text);
+    }
+
+    public void setTakeoffCityLabel(String text) {
+        takeoffCityLabel.setText(text);
+    }
+    public void setLandingLabel(String text) {
+        landingLabel.setText(text);
+    }
+    public void setLandingCityLabel(String text) {
+        landingCityLabel.setText(text);
+    }
+    public void setDurationLabel(String text) {
+        durationLabel.setText(text);
+    }
+
 
 
 
