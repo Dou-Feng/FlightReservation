@@ -1,27 +1,20 @@
 package hust.UI;
 
 import com.jfoenix.controls.JFXButton;
-import hust.Main;
 import hust.bean.Flight;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
-import javax.sound.sampled.Line;
 import java.sql.Time;
-import java.util.ServiceConfigurationError;
 
 
 public class FlightCell extends ListCell<Flight> {
@@ -271,10 +264,21 @@ public class FlightCell extends ListCell<Flight> {
             ReservationController.controller.setDurationLabel(durationLabel.getText());
             ReservationController.controller.switchAnimation(ReservationController.controller.spinPane,
                     ReservationController.controller.infoPane);
+            ReservationController.controller.addPassenger(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    public static short seatClass2short(SeatClass s) {
+        switch (seatClass) {
+            case FIRST: return (short) 1;
+            case BUSINESS: return (short) 2;
+            case ECONOMY: return (short) 3;
+        }
+        return (short) -1;
+    }
+
 }
 
 enum SeatClass {

@@ -1,16 +1,15 @@
 package hust.UI;
 
-import com.gluonhq.charm.glisten.control.ToggleButtonGroup;
 import com.jfoenix.controls.*;
 import hust.DB.DBConnection;
-import hust.Main;
 import hust.bean.Flight;
 import hust.bean.Passenger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,18 +18,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.Duration;
-import org.controlsfx.control.MaskerPane;
-
-import javax.management.Query;
 import java.net.URL;
-import java.security.Key;
 import java.sql.*;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 public class ReservationController implements Initializable {
@@ -88,7 +81,6 @@ public class ReservationController implements Initializable {
     @FXML
     private Label infantsNumLabel;
 
-    public static Date takeoffDate;
 
     @FXML
     private JFXListView<Flight> flightList; // 显示航班信息
@@ -108,7 +100,6 @@ public class ReservationController implements Initializable {
     @FXML
     private Label durationLabel;
 
-
     @FXML
     private TextField contactNameText;
     @FXML
@@ -116,22 +107,12 @@ public class ReservationController implements Initializable {
 
     public JFXListView<Passenger> passengerList;
 
-    public static short passengerIndex = 0;
 
-    private ObservableList<Passenger> passengerObservableList = FXCollections.observableArrayList();
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // 考虑第一个pane的初始化工作
-        // 1. 获得text中出发时间、城市；达到时间城市的信息
-        // 2. 能够处理错误，比如有一个或者多个输入框必要输入没有输入，返回一个弹框提示用户输入
-        // 3. 能够在Menubutton的下拉菜单中处理人数更新的操作, 并在Menubutton的text处显示人数信息
-        // 4. 返程按钮按下后，返程日期需要设计为disable
-        // 5. 按下搜索按钮后，需要进行信息的搜集，当前pane隐藏，下一个pane的显示，中间用MaskerPane过渡
-        // 6. 考虑场景切换的动画效果
-        // 7. 在datePicker中当前日期以前的日期无法选择
-        // 8. 点击订单按钮，打开一个新的窗口。当前窗口被取代。（最后实现）
         flightList.setItems(flightObservableList);
         // 实现自定义的item
         flightList.setCellFactory(new Callback<ListView<Flight>, ListCell<Flight>>() {
@@ -161,15 +142,40 @@ public class ReservationController implements Initializable {
         // 第二阶段
         // 点击预订按钮
         // 在点击预订按钮后，首先需要得知用户选择的航班的信息，（航班号，日期，座位类型，票价等）
+
+        // 绑定一个cell factory 填充乘客的列表
         passengerList.setItems(passengerObservableList);
-        addPassenger(null); // 添加一个乘客
         passengerList.setCellFactory(new Callback<ListView<Passenger>, ListCell<Passenger>>() {
             @Override
             public ListCell<Passenger> call(ListView<Passenger> param) {
                 return new PassengerCell();
             }
         });
+
+        popupList.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue) {
+                    popupList.setVisible(false);
+                }
+            }
+        });
+
+
     }
+
+    //---------------------- order pane implementation-----------------------
+    // 1. 获得text中出发时间、城市；达到时间城市的信息
+    // 2. 能够处理错误，比如有一个或者多个输入框必要输入没有输入，返回一个弹框提示用户输入
+    // 3. 能够在Menubutton的下拉菜单中处理人数更新的操作, 并在Menubutton的text处显示人数信息
+    // 4. 返程按钮按下后，返程日期需要设计为disable
+    // 5. 按下搜索按钮后，需要进行信息的搜集，当前pane隐藏，下一个pane的显示，中间用MaskerPane过渡
+    // 6. 考虑场景切换的动画效果
+    // 7. 在datePicker中当前日期以前的日期无法选择
+    // 8. 点击订单按钮，打开一个新的窗口。当前窗口被取代。（最后实现）
+    // 用来保存机票的信息
+    private ObservableList<Passenger> passengerObservableList = FXCollections.observableArrayList();
+    public static Date takeoffDate = Date.valueOf("2019-05-31");
 
     @FXML
     // 处理搜索按钮按下之后的事件
@@ -219,6 +225,7 @@ public class ReservationController implements Initializable {
         flightList.getItems().clear(); // 清除列表项
 
         ReservationController.takeoffDate = takeoffDate; // 设置全局变量用来处理订单信息
+        travelerBtnClicked(null); // 让下拉菜单弹回去
 //        System.out.println("debug: flight observable list item number:" + flightObservableList.size());
         Platform.runLater(new Runnable() {
             @Override
@@ -227,7 +234,8 @@ public class ReservationController implements Initializable {
                     // 处理查询
 
                     Connection connection = DBConnection.getConnection();
-                    String sql = "select * from v_flight where Date=? and TakeoffCity=? and LandingCity=? and FCRemain+BCRemain+ECRemain>=? order by TakeoffTime asc";
+                    String sql = "select * from v_flight where Date=? and TakeoffCity=? and LandingCity=? and " +
+                                    "FCRemain+BCRemain+ECRemain>=? order by TakeoffTime asc";
                     PreparedStatement pstmt = connection.prepareStatement(sql);
                     pstmt.setDate(1, takeoffDate);
                     pstmt.setString(2, takeoffCity);
@@ -292,7 +300,6 @@ public class ReservationController implements Initializable {
         alert.showAndWait();
 
     }
-
 
     @FXML
     protected void roundTripSelected(ActionEvent event) {
@@ -433,15 +440,47 @@ public class ReservationController implements Initializable {
     }
 
 
-    // -----------------------------info implements ------------------------------
+    // -----------------------------information implementation ------------------------------
+
+    public static short passengerIndex = 0;
+    @FXML
+    private JFXButton addPassengerBtn;
+
+    private static int addPassengerNum = -1;
 
     @FXML
     // 添加乘客信息项目item
-    protected void addPassenger(ActionEvent event) {
+    public void addPassenger(ActionEvent event) {
+
         if(passengerIndex >= 9) {
             ReservationController.showDialog("不能再添加乘机人");
-        } else {
-            passengerObservableList.add(new Passenger(passengerIndex++));
+            return;
+        }
+        // 查询数据库，余票是否支持插入乘客
+        try {
+            if (addPassengerNum == -1) {
+                short seatC = FlightCell.seatClass2short(FlightCell.seatClass); // 用来记录座位类型
+                String seatRemain = (seatC == 1 ? "FCRemain" : seatC == 2 ? "BCRemain" : "ECRemain");
+                String querySql = "select " + seatRemain + " from Seats where FNo=? and Date=?;";
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement pStmt = conn.prepareStatement(querySql);
+                pStmt.setString(1, flightLabel.getText());
+                pStmt.setDate(2, takeoffDate);
+                ResultSet rs = pStmt.executeQuery();
+                if (rs.next())
+                    addPassengerNum = rs.getInt(1);
+                else
+                    throw new SQLException("输入了错误的信息！");
+            }
+            if (addPassengerNum > 0) {// 如果还有剩余座位，可以添加
+                passengerObservableList.add(new Passenger(passengerIndex++));
+                if (--addPassengerNum == 0)
+                    addPassengerBtn.setDisable(true);
+            } else
+                addPassengerBtn.setDisable(true);
+        } catch (SQLException e) {
+            showDialog("输入了错误的信息");
+            e.printStackTrace();
         }
     }
 
@@ -460,40 +499,148 @@ public class ReservationController implements Initializable {
             return;
         }
         int validPassengerNum = 0;
-        for (Passenger p : passengerObservableList) {
+        Iterator<Passenger> it = passengerObservableList.iterator();
+        while (it.hasNext()) {
+            Passenger p = it.next();
             if (p.isValid())
                 validPassengerNum++;
             else {
-                passengerObservableList.remove(p); // 去掉无效的乘客信息
+                if (passengerObservableList.size() > 1) // 保留一个
+                    it.remove(); // 去掉无效的乘客信息
             }
         }
         if (validPassengerNum == 0) {
             ReservationController.showDialog("乘客人数至少为1");
             return;
         }
+        switchAnimation(infoPane, spinPane);
         // 开始数据库操作
         Connection conn = null;
         try {
-            // 首先生成乘客的信息表项
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false); // 取消自动提交
-            String sqlInsert = "insert into Passenger values(?,?,?,?,?);";
-//            int startNo =
-//            for (Passenger p : passengerObservableList) {
-//                PreparedStatement pstmt = conn.prepareStatement(sqlInsert);
-//                pstmt.setInt(1, );
-//            }
+            // 首先生成订单信息
+            String sqlOrder = "insert into T_Order (OrderNo, ContactName, ContactPNo)values(?,?,?);";
+            PreparedStatement pstmt = conn.prepareStatement(sqlOrder);
+            int startONo = getNumFromDatabase(conn,"select count(*) from T_Order;");
+            String orderNo = String.format("%8d", ++startONo).replace(" ", "0");
+            pstmt.setString(1, orderNo);
+            pstmt.setString(2, contactNameText.getText());
+            pstmt.setString(3, contactPhoneText.getText());
+            pstmt.executeUpdate(); // 执行第一次sql语句，插入一条记录
+            // 创建一些sql语句
+            String sqlPassenger = "insert into Passenger values(?,?,?,?,?);";
+            String sqlTicket = "insert into Ticket values (?,?,?,?,?,?);";
+            String queryPassenger = "select * from Passenger where PName like ?;";
 
+            float amount = 0.0f; // 用来统计订单的账单情况
+            int passengerNum = 0; // 用来记录乘客人数
+            short seatC = FlightCell.seatClass2short(FlightCell.seatClass); // 用来记录座位类型
+            float price = 0.0f; // 用来记录价格
+            int seatRemain_t = 0; // 用来记录剩余座位数
+            String seatRemain =  (seatC==1?"FCRemain":seatC==2?"BCRemain":"ECRemain");
+            // 从视图中查询到座位的价格和剩余座位数
+            String sqlFlightInfo = "select * from v_flight where Date=? and FNo=? ";
+            PreparedStatement prStmt = conn.prepareStatement(sqlFlightInfo);
+            prStmt.setString(2, flightLabel.getText());
+            prStmt.setDate(1, takeoffDate);
+            ResultSet rs = prStmt.executeQuery();
+            if(rs.next()) {
+                int fcremain = rs.getInt(8);
+                int bcremain = rs.getInt(10);
+                int ecremain = rs.getInt(12);
+                float fcprice = rs.getFloat(9);
+                float bcprice = rs.getFloat(11);
+                float ecprice = rs.getFloat(13);
+                seatRemain_t = (seatC==1?fcremain:seatC==2?bcremain:ecremain);
+                price = (seatC==1?fcprice:seatC==2?bcprice:ecprice);
 
+            } else {
+                throw new SQLException("Can not flight information");
+            }
+
+            // 从数据库中得到乘客表中的表项数
+            int startPNo = getNumFromDatabase(conn, "select count(*) from Passenger;");
+            // 从数据库中获取机票的最大编号信息
+            int startTNo = getNumFromDatabase(conn, "select count(*) from Ticket;");
+            for (Passenger p : passengerObservableList) {
+                PreparedStatement passStmt = conn.prepareStatement(queryPassenger);
+                passStmt.setString(1, p.getName());
+                ResultSet prs = passStmt.executeQuery(); // 通过姓名查询乘客
+                if (!prs.next()) {
+                    // 如果数据库中不存在这名乘客（不存在同名的乘客），插入到数据库中
+                    PreparedStatement pstmt2 = conn.prepareStatement(sqlPassenger);
+                    p.setNo(String.format("%12d", ++startPNo).replace(" ", "0"));
+                    pstmt2.setString(1, p.getNo());
+                    pstmt2.setString(2, p.getName());
+                    pstmt2.setShort(3, p.getCerType());
+                    pstmt2.setString(4, p.getCerNo());
+                    pstmt2.setShort(5, p.getpType());
+                    pstmt2.executeUpdate(); // 第2次执行，插入一条乘客记录
+                } else {
+                    p.setNo(prs.getString(1)); // 得到乘客的编号
+                }
+                // 准备插入一张机票信息：机票编号、航班编号、乘客编号、起飞时间、座位类型、票价
+                PreparedStatement pstmt3 = conn.prepareStatement(sqlTicket);
+                String ticketNo = String.format("%13d", ++startTNo).replace(" ", "0");
+                pstmt3.setString(1, ticketNo);
+                pstmt3.setString(2, flightLabel.getText());
+                pstmt3.setString(3, p.getNo());
+                pstmt3.setDate(4, ReservationController.takeoffDate);
+                pstmt3.setShort(5, seatC);
+                pstmt3.setFloat(6, price);
+                pstmt3.executeUpdate(); // 第3次执行sql语句，插入一张机票记录
+                amount += p.getpType()==1?price:price/2; // 累计添加账单的总量,小孩子打折
+
+                // 把订单号和机票号插入到订单机票表中
+                String insertOT = "insert into T_Order_Ticket values (?,?)";
+                PreparedStatement insertOTStmt = conn.prepareStatement(insertOT);
+                insertOTStmt.setString(1, orderNo);
+                insertOTStmt.setString(2, ticketNo);
+                insertOTStmt.executeUpdate(); // 第4次执行sql语句，插入一条记录到订单机票表中
+                passengerNum++; // 每张票生成后，乘客数加一
+            }
+            // 修改座位表信息
+            String updateSeat = "update Seats set " + seatRemain + "=? where FNo=? and Date=?";
+            PreparedStatement updateSeatStmt = conn.prepareStatement(updateSeat);
+            updateSeatStmt.setInt(1, seatRemain_t - passengerNum);
+            updateSeatStmt.setString(2, flightLabel.getText());
+            updateSeatStmt.setDate(3, takeoffDate);
+            updateSeatStmt.executeUpdate(); // 第5次执行sql语句，更新座位数
+            // 生成账单
+            String insertPay = "insert into T_Bill values (?,?,?);";
+            PreparedStatement payStmt = conn.prepareStatement(insertPay);
+            payStmt.setString(1, orderNo);
+            payStmt.setFloat(2, amount);
+            payStmt.setInt(3,0);
+            payStmt.executeUpdate(); // 第6次执行sql语句，插入一条记录到订单机票表中
+
+            conn.commit(); // 最后的commit，让6次sql操作保持完整性
+            ReservationController.amount = amount;
+            ReservationController.orderNo = orderNo;
+            payPaneAmountLabel.setText("订单金额：" + String.valueOf(amount) + "元");
+            payPaneOrderLabel.setText("订单号："+orderNo);
+            clearText();
+            switchAnimation(spinPane, payPane); // 如果执行顺利，那么最终会到达支付界面
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             System.out.println("debug: sql insert fail. rollback");
             try {
                 conn.rollback();
+                clearText();
+                switchAnimation(spinPane, errorPane); // 切换到错误的界面
             } catch (SQLException c) {
                 System.out.println("debug: rollback fail, T_T");
                 Platform.exit(); // crash!!!
             }
         }
+    }
+
+    private int getNumFromDatabase(Connection conn, String sql) throws SQLException{
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+        rs.next();
+        return rs.getInt(1);
     }
 
     @FXML
@@ -511,7 +658,8 @@ public class ReservationController implements Initializable {
         contactPhoneText.clear();
         passengerObservableList.clear();
         passengerIndex = 0;
-        addPassenger(null);
+        addPassengerBtn.setDisable(false);
+        addPassengerNum = -1;  // 保持下次操作的正确性，把addPassenger置为未初始化状态
 
     }
     public void setFlightLabel(String text) {
@@ -535,12 +683,44 @@ public class ReservationController implements Initializable {
         durationLabel.setText(text);
     }
 
+    //-------------------- pay pane implementation------------------
+    public static float amount = 0.0f; // 用来显示订单的金额
+    public static String orderNo = "11111111"; // 用来显示订单号
 
+    @FXML
+    private Label payPaneOrderLabel;
+    @FXML
+    private Label payPaneAmountLabel;
+    @FXML
+    private JFXButton payBtn;
+    @FXML
+    private JFXButton payPaneBackBtn;
 
+    @FXML
+    // 按下支付按钮，订单的支付状态改变为支付
+    protected void payButtonClicked(ActionEvent event) {
+
+        fromPayToOrder(null);
+    }
+
+    @FXML
+    protected void fromPayToOrder(ActionEvent event) {
+        switchAnimation(payPane, orderPane);
+    }
+
+    //-------------------- error pane implementation------------------
+    @FXML
+    private Pane errorPane;
+    @FXML
+    private Label errorLabel;
+
+    @FXML
+    JFXButton errorPaneBackBtn;
+
+    @FXML
+    protected void fromErrToOrder(ActionEvent event) {
+        switchAnimation(errorPane, orderPane);
+    }
 
 }
 
-
-enum PaneType {
-    ORDER, FLIGHT, SPIN, PAY
-}
