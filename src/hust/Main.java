@@ -14,14 +14,13 @@ import javafx.stage.Stage;
 public class Main extends Application {
     public static Scene scene = null;
     public static Stage currentStage = null;
+    public static String id;
     @Override
     public void start(Stage stage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/ReservationLayout.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/SignLayout.fxml"));
             Pane pane = fxmlLoader.load();
-            ReservationController.controller = fxmlLoader.getController();
             scene = new Scene(pane, pane.getPrefWidth(),pane.getPrefHeight());
-            scene.getStylesheets().add(getClass().getResource("/res/style/list-cell-color.css").toString());
             currentStage = stage;
             currentStage.setTitle("Flight");
             currentStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/res/images/flight.png")));

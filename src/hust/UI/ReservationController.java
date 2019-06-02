@@ -17,6 +17,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.util.Callback;
@@ -152,17 +154,9 @@ public class ReservationController implements Initializable {
             }
         });
 
-        popupList.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue) {
-                    popupList.setVisible(false);
-                }
-            }
-        });
-
-
     }
+
+
 
     //---------------------- order pane implementation-----------------------
     // 1. 获得text中出发时间、城市；达到时间城市的信息
@@ -213,7 +207,6 @@ public class ReservationController implements Initializable {
         int adult = Integer.valueOf(adultsNumLabel.getText());
         int children = Integer.valueOf(childrenNumLabel.getText());
         int infant = Integer.valueOf(infantsNumLabel.getText());
-//        System.out.println(String.format("Debug: adults: %d, children: %d, infant: %d.", adult, children, infant));
         if (returnDate == null) {
             oneWayBtn.setSelected(true);
             oneWaySelected(null);
@@ -221,18 +214,14 @@ public class ReservationController implements Initializable {
         // play animation to invoke spin pane
         switchAnimation(orderPane, spinPane);
 
-//        System.out.println("debug: flight observable before clear list item number:" + flightObservableList.size());
         flightList.getItems().clear(); // 清除列表项
 
         ReservationController.takeoffDate = takeoffDate; // 设置全局变量用来处理订单信息
-        travelerBtnClicked(null); // 让下拉菜单弹回去
-//        System.out.println("debug: flight observable list item number:" + flightObservableList.size());
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 try {
                     // 处理查询
-
                     Connection connection = DBConnection.getConnection();
                     String sql = "select * from v_flight where Date=? and TakeoffCity=? and LandingCity=? and " +
                                     "FCRemain+BCRemain+ECRemain>=? order by TakeoffTime asc";
@@ -273,7 +262,7 @@ public class ReservationController implements Initializable {
 
 
     public void switchAnimation(Pane p1, Pane p2) {
-
+        popupList.setVisible(false);
         KeyValue p1Opacity = new KeyValue(p1.opacityProperty(), 0.0);
         KeyValue p2Opacity = new KeyValue(p2.opacityProperty(), 1.0);
 //        KeyValue p1Visibility = new KeyValue(p1.visibleProperty(), false);
@@ -295,7 +284,6 @@ public class ReservationController implements Initializable {
     public static void showDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("信息");
-        alert.setHeaderText("输入错误");
         alert.setContentText(message);
         alert.showAndWait();
 
@@ -439,8 +427,29 @@ public class ReservationController implements Initializable {
         travelerBtn.setText(result.toString());
     }
 
+    @FXML
+    protected void popListMouseExited(MouseEvent event) {
+        popupList.setVisible(false);
+//        System.out.println("Mouse Exit popup list.");
+    }
 
-    // -----------------------------information implementation ------------------------------
+    @FXML
+    protected void searchKeyPressed(KeyEvent event) {
+//        System.out.println("Key pressed");
+        if (event.getCode() == KeyCode.ENTER) {
+            searchFlight(null);
+        }
+    }
+
+    // -----------------------------flight pane implementation ------------------------------
+    @FXML
+    protected void flightPaneKeyHandle(KeyEvent event) {
+        if (event.getCode() == KeyCode.ESCAPE) {
+            backToOrderPane(null);
+        }
+    }
+
+    // -----------------------------information pane implementation ------------------------------
 
     public static short passengerIndex = 0;
     @FXML
@@ -513,127 +522,134 @@ public class ReservationController implements Initializable {
             ReservationController.showDialog("乘客人数至少为1");
             return;
         }
-        switchAnimation(infoPane, spinPane);
-        // 开始数据库操作
-        Connection conn = null;
-        try {
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); // 取消自动提交
-            // 首先生成订单信息
-            String sqlOrder = "insert into T_Order (OrderNo, ContactName, ContactPNo)values(?,?,?);";
-            PreparedStatement pstmt = conn.prepareStatement(sqlOrder);
-            int startONo = getNumFromDatabase(conn,"select count(*) from T_Order;");
-            String orderNo = String.format("%8d", ++startONo).replace(" ", "0");
-            pstmt.setString(1, orderNo);
-            pstmt.setString(2, contactNameText.getText());
-            pstmt.setString(3, contactPhoneText.getText());
-            pstmt.executeUpdate(); // 执行第一次sql语句，插入一条记录
-            // 创建一些sql语句
-            String sqlPassenger = "insert into Passenger values(?,?,?,?,?);";
-            String sqlTicket = "insert into Ticket values (?,?,?,?,?,?);";
-            String queryPassenger = "select * from Passenger where PName like ?;";
+        switchAnimation(infoPane, spinPane); // 过场动画
 
-            float amount = 0.0f; // 用来统计订单的账单情况
-            int passengerNum = 0; // 用来记录乘客人数
-            short seatC = FlightCell.seatClass2short(FlightCell.seatClass); // 用来记录座位类型
-            float price = 0.0f; // 用来记录价格
-            int seatRemain_t = 0; // 用来记录剩余座位数
-            String seatRemain =  (seatC==1?"FCRemain":seatC==2?"BCRemain":"ECRemain");
-            // 从视图中查询到座位的价格和剩余座位数
-            String sqlFlightInfo = "select * from v_flight where Date=? and FNo=? ";
-            PreparedStatement prStmt = conn.prepareStatement(sqlFlightInfo);
-            prStmt.setString(2, flightLabel.getText());
-            prStmt.setDate(1, takeoffDate);
-            ResultSet rs = prStmt.executeQuery();
-            if(rs.next()) {
-                int fcremain = rs.getInt(8);
-                int bcremain = rs.getInt(10);
-                int ecremain = rs.getInt(12);
-                float fcprice = rs.getFloat(9);
-                float bcprice = rs.getFloat(11);
-                float ecprice = rs.getFloat(13);
-                seatRemain_t = (seatC==1?fcremain:seatC==2?bcremain:ecremain);
-                price = (seatC==1?fcprice:seatC==2?bcprice:ecprice);
+        // 开启一个线程，开始数据库操作
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Connection conn = null;
+                try {
+                    conn = DBConnection.getConnection();
+                    conn.setAutoCommit(false); // 取消自动提交
+                    // 首先生成订单信息
+                    String sqlOrder = "insert into T_Order (OrderNo, ContactName, ContactPNo)values(?,?,?);";
+                    PreparedStatement pstmt = conn.prepareStatement(sqlOrder);
+                    int startONo = getNumFromDatabase(conn,"select count(*) from T_Order;");
+                    String orderNo = String.format("%8d", ++startONo).replace(" ", "0");
+                    pstmt.setString(1, orderNo);
+                    pstmt.setString(2, contactNameText.getText());
+                    pstmt.setString(3, contactPhoneText.getText());
+                    pstmt.executeUpdate(); // 执行第一次sql语句，插入一条记录
+                    // 创建一些sql语句
+                    String sqlPassenger = "insert into Passenger values(?,?,?,?,?);";
+                    String sqlTicket = "insert into Ticket values (?,?,?,?,?,?);";
+                    String queryPassenger = "select * from Passenger where PName like ?;";
 
-            } else {
-                throw new SQLException("Can not flight information");
-            }
+                    float amount = 0.0f; // 用来统计订单的账单情况
+                    int passengerNum = 0; // 用来记录乘客人数
+                    short seatC = FlightCell.seatClass2short(FlightCell.seatClass); // 用来记录座位类型
+                    float price = 0.0f; // 用来记录价格
+                    int seatRemain_t = 0; // 用来记录剩余座位数
+                    String seatRemain =  (seatC==1?"FCRemain":seatC==2?"BCRemain":"ECRemain");
+                    // 从视图中查询到座位的价格和剩余座位数
+                    String sqlFlightInfo = "select * from v_flight where Date=? and FNo=? ";
+                    PreparedStatement prStmt = conn.prepareStatement(sqlFlightInfo);
+                    prStmt.setString(2, flightLabel.getText());
+                    prStmt.setDate(1, takeoffDate);
+                    ResultSet rs = prStmt.executeQuery();
+                    if(rs.next()) {
+                        int fcremain = rs.getInt(8);
+                        int bcremain = rs.getInt(10);
+                        int ecremain = rs.getInt(12);
+                        float fcprice = rs.getFloat(9);
+                        float bcprice = rs.getFloat(11);
+                        float ecprice = rs.getFloat(13);
+                        seatRemain_t = (seatC==1?fcremain:seatC==2?bcremain:ecremain);
+                        price = (seatC==1?fcprice:seatC==2?bcprice:ecprice);
 
-            // 从数据库中得到乘客表中的表项数
-            int startPNo = getNumFromDatabase(conn, "select count(*) from Passenger;");
-            // 从数据库中获取机票的最大编号信息
-            int startTNo = getNumFromDatabase(conn, "select count(*) from Ticket;");
-            for (Passenger p : passengerObservableList) {
-                PreparedStatement passStmt = conn.prepareStatement(queryPassenger);
-                passStmt.setString(1, p.getName());
-                ResultSet prs = passStmt.executeQuery(); // 通过姓名查询乘客
-                if (!prs.next()) {
-                    // 如果数据库中不存在这名乘客（不存在同名的乘客），插入到数据库中
-                    PreparedStatement pstmt2 = conn.prepareStatement(sqlPassenger);
-                    p.setNo(String.format("%12d", ++startPNo).replace(" ", "0"));
-                    pstmt2.setString(1, p.getNo());
-                    pstmt2.setString(2, p.getName());
-                    pstmt2.setShort(3, p.getCerType());
-                    pstmt2.setString(4, p.getCerNo());
-                    pstmt2.setShort(5, p.getpType());
-                    pstmt2.executeUpdate(); // 第2次执行，插入一条乘客记录
-                } else {
-                    p.setNo(prs.getString(1)); // 得到乘客的编号
+                    } else {
+                        throw new SQLException("Can not flight information");
+                    }
+
+                    // 从数据库中得到乘客表中的表项数
+                    int startPNo = getNumFromDatabase(conn, "select count(*) from Passenger;");
+                    // 从数据库中获取机票的最大编号信息
+                    int startTNo = getNumFromDatabase(conn, "select count(*) from Ticket;");
+                    for (Passenger p : passengerObservableList) {
+                        PreparedStatement passStmt = conn.prepareStatement(queryPassenger);
+                        passStmt.setString(1, p.getName());
+                        ResultSet prs = passStmt.executeQuery(); // 通过姓名查询乘客
+                        if (!prs.next()) {
+                            // 如果数据库中不存在这名乘客（不存在同名的乘客），插入到数据库中
+                            PreparedStatement pstmt2 = conn.prepareStatement(sqlPassenger);
+                            p.setNo(String.format("%12d", ++startPNo).replace(" ", "0"));
+                            pstmt2.setString(1, p.getNo());
+                            pstmt2.setString(2, p.getName());
+                            pstmt2.setShort(3, p.getCerType());
+                            pstmt2.setString(4, p.getCerNo());
+                            pstmt2.setShort(5, p.getpType());
+                            pstmt2.executeUpdate(); // 第2次执行，插入一条乘客记录
+                        } else {
+                            p.setNo(prs.getString(1)); // 得到乘客的编号
+                        }
+                        // 准备插入一张机票信息：机票编号、航班编号、乘客编号、起飞时间、座位类型、票价
+                        PreparedStatement pstmt3 = conn.prepareStatement(sqlTicket);
+                        String ticketNo = String.format("%13d", ++startTNo).replace(" ", "0");
+                        pstmt3.setString(1, ticketNo);
+                        pstmt3.setString(2, flightLabel.getText());
+                        pstmt3.setString(3, p.getNo());
+                        pstmt3.setDate(4, ReservationController.takeoffDate);
+                        pstmt3.setShort(5, seatC);
+                        pstmt3.setFloat(6, price);
+                        pstmt3.executeUpdate(); // 第3次执行sql语句，插入一张机票记录
+                        amount += p.getpType()==1?price:price/2; // 累计添加账单的总量,小孩子打折
+
+                        // 把订单号和机票号插入到订单机票表中
+                        String insertOT = "insert into T_Order_Ticket values (?,?)";
+                        PreparedStatement insertOTStmt = conn.prepareStatement(insertOT);
+                        insertOTStmt.setString(1, orderNo);
+                        insertOTStmt.setString(2, ticketNo);
+                        insertOTStmt.executeUpdate(); // 第4次执行sql语句，插入一条记录到订单机票表中
+                        passengerNum++; // 每张票生成后，乘客数加一
+                    }
+                    // 修改座位表信息
+                    String updateSeat = "update Seats set " + seatRemain + "=? where FNo=? and Date=?";
+                    PreparedStatement updateSeatStmt = conn.prepareStatement(updateSeat);
+                    updateSeatStmt.setInt(1, seatRemain_t - passengerNum);
+                    updateSeatStmt.setString(2, flightLabel.getText());
+                    updateSeatStmt.setDate(3, takeoffDate);
+                    updateSeatStmt.executeUpdate(); // 第5次执行sql语句，更新座位数
+                    // 生成账单
+                    String insertPay = "insert into T_Bill values (?,?,?);";
+                    PreparedStatement payStmt = conn.prepareStatement(insertPay);
+                    payStmt.setString(1, orderNo);
+                    payStmt.setFloat(2, amount);
+                    payStmt.setInt(3,0);
+                    payStmt.executeUpdate(); // 第6次执行sql语句，插入一条记录到订单机票表中
+
+                    conn.commit(); // 最后的commit，让6次sql操作保持完整性
+                    ReservationController.amount = amount;
+                    ReservationController.orderNo = orderNo;
+                    payPaneAmountLabel.setText("订单金额：" + String.valueOf(amount) + "元");
+                    payPaneOrderLabel.setText("订单号："+orderNo);
+                    clearText();
+                    switchAnimation(spinPane, payPane); // 如果执行顺利，那么最终会到达支付界面
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println("debug: sql insert fail. rollback");
+                    try {
+                        conn.rollback();
+                        clearText();
+                        switchAnimation(spinPane, errorPane); // 切换到错误的界面
+                    } catch (SQLException c) {
+                        System.out.println("debug: rollback fail, T_T");
+                        Platform.exit(); // crash!!!
+                    }
                 }
-                // 准备插入一张机票信息：机票编号、航班编号、乘客编号、起飞时间、座位类型、票价
-                PreparedStatement pstmt3 = conn.prepareStatement(sqlTicket);
-                String ticketNo = String.format("%13d", ++startTNo).replace(" ", "0");
-                pstmt3.setString(1, ticketNo);
-                pstmt3.setString(2, flightLabel.getText());
-                pstmt3.setString(3, p.getNo());
-                pstmt3.setDate(4, ReservationController.takeoffDate);
-                pstmt3.setShort(5, seatC);
-                pstmt3.setFloat(6, price);
-                pstmt3.executeUpdate(); // 第3次执行sql语句，插入一张机票记录
-                amount += p.getpType()==1?price:price/2; // 累计添加账单的总量,小孩子打折
-
-                // 把订单号和机票号插入到订单机票表中
-                String insertOT = "insert into T_Order_Ticket values (?,?)";
-                PreparedStatement insertOTStmt = conn.prepareStatement(insertOT);
-                insertOTStmt.setString(1, orderNo);
-                insertOTStmt.setString(2, ticketNo);
-                insertOTStmt.executeUpdate(); // 第4次执行sql语句，插入一条记录到订单机票表中
-                passengerNum++; // 每张票生成后，乘客数加一
             }
-            // 修改座位表信息
-            String updateSeat = "update Seats set " + seatRemain + "=? where FNo=? and Date=?";
-            PreparedStatement updateSeatStmt = conn.prepareStatement(updateSeat);
-            updateSeatStmt.setInt(1, seatRemain_t - passengerNum);
-            updateSeatStmt.setString(2, flightLabel.getText());
-            updateSeatStmt.setDate(3, takeoffDate);
-            updateSeatStmt.executeUpdate(); // 第5次执行sql语句，更新座位数
-            // 生成账单
-            String insertPay = "insert into T_Bill values (?,?,?);";
-            PreparedStatement payStmt = conn.prepareStatement(insertPay);
-            payStmt.setString(1, orderNo);
-            payStmt.setFloat(2, amount);
-            payStmt.setInt(3,0);
-            payStmt.executeUpdate(); // 第6次执行sql语句，插入一条记录到订单机票表中
+        });
 
-            conn.commit(); // 最后的commit，让6次sql操作保持完整性
-            ReservationController.amount = amount;
-            ReservationController.orderNo = orderNo;
-            payPaneAmountLabel.setText("订单金额：" + String.valueOf(amount) + "元");
-            payPaneOrderLabel.setText("订单号："+orderNo);
-            clearText();
-            switchAnimation(spinPane, payPane); // 如果执行顺利，那么最终会到达支付界面
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            System.out.println("debug: sql insert fail. rollback");
-            try {
-                conn.rollback();
-                clearText();
-                switchAnimation(spinPane, errorPane); // 切换到错误的界面
-            } catch (SQLException c) {
-                System.out.println("debug: rollback fail, T_T");
-                Platform.exit(); // crash!!!
-            }
-        }
     }
 
     private int getNumFromDatabase(Connection conn, String sql) throws SQLException{
@@ -683,6 +699,20 @@ public class ReservationController implements Initializable {
         durationLabel.setText(text);
     }
 
+
+
+    @FXML
+    protected void infoPaneKeyHandle(KeyEvent event) {
+        if(event.getCode() == KeyCode.ENTER) {
+            confirm(null);
+        }
+        if (event.getCode() == KeyCode.ESCAPE) {
+            backToFlight(null);
+        }
+    }
+
+
+
     //-------------------- pay pane implementation------------------
     public static float amount = 0.0f; // 用来显示订单的金额
     public static String orderNo = "11111111"; // 用来显示订单号
@@ -699,8 +729,38 @@ public class ReservationController implements Initializable {
     @FXML
     // 按下支付按钮，订单的支付状态改变为支付
     protected void payButtonClicked(ActionEvent event) {
+        // 进行数据库操作
+        switchAnimation(payPane, spinPane);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Connection conn = null;
+                try {
+                    conn = DBConnection.getConnection();
+                    conn.setAutoCommit(false);
+                    String sql = "update T_Bill set IsPay=? where T_Bill.OrderNo=?;";
+                    PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                    preparedStatement.setInt(1, 1);
+                    preparedStatement.setString(2, orderNo);
+                    preparedStatement.executeUpdate();
+                    conn.commit();
+                    showDialog("支付成功！");
+                } catch (Exception e) {
+                    if (conn != null) {
+                        try {
+                            conn.rollback();
+                            showDialog("支付失败！");
+                        } catch (SQLException c) {
+                            System.out.println("T_Bill rollback fail, Alert !");
+                            Platform.exit(); // termination
+                        }
+                    }
+                } finally {
+                    switchAnimation(spinPane, orderPane);
+                }
+            }
+        });
 
-        fromPayToOrder(null);
     }
 
     @FXML
@@ -708,6 +768,15 @@ public class ReservationController implements Initializable {
         switchAnimation(payPane, orderPane);
     }
 
+    @FXML
+    protected void payPaneKeyHandle(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            payButtonClicked(null);
+        }
+        if (event.getCode() == KeyCode.ESCAPE) {
+            switchAnimation(payPane, orderPane);
+        }
+    }
     //-------------------- error pane implementation------------------
     @FXML
     private Pane errorPane;
@@ -722,5 +791,12 @@ public class ReservationController implements Initializable {
         switchAnimation(errorPane, orderPane);
     }
 
+    @FXML
+    protected void errorPaneKeyHandle(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.ESCAPE) {
+            switchAnimation(errorPane, orderPane);
+        }
+
+    }
 }
 
