@@ -15,25 +15,23 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="hust.UI.UserController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="702.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hust.UI.UserController">
    <top>
-      <HBox prefHeight="42.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_LEFT" prefHeight="64.0" prefWidth="702.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXButton text="返回">
+            <JFXButton buttonType="RAISED" onAction="#back" prefHeight="39.0" prefWidth="73.0" style="-fx-background-color: orange;" text="返回">
                <HBox.margin>
-                  <Insets top="5.0" />
+                  <Insets left="5.0" top="2.0" />
                </HBox.margin>
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../res/images/back.png" />
+                        <Image url="@../res/images/back2.png" />
                      </image>
                   </ImageView>
                </graphic>
             </JFXButton>
-            <Label prefHeight="37.0" prefWidth="105.0" text="您好,冯先生">
+            <Label alignment="CENTER" minWidth="100.0" prefHeight="45.0" prefWidth="100.0" text="                    ">
                <HBox.margin>
                   <Insets left="20.0" />
                </HBox.margin>
@@ -41,7 +39,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
                   <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -51,23 +49,18 @@
                         <Insets top="10.0" />
                      </HBox.margin>
                   </ImageView>
-                  <JFXTextField>
+                  <JFXTextField fx:id="text_filter">
                      <HBox.margin>
                         <Insets left="5.0" />
                      </HBox.margin>
                   </JFXTextField>
                </children>
             </HBox>
-            <JFXButton style="-fx-background-color: orange;" text="刷新">
+            <JFXButton buttonType="RAISED" onAction="#refresh" prefHeight="36.0" prefWidth="54.0" style="-fx-background-color: orange;" text="刷新">
                <HBox.margin>
                   <Insets left="20.0" top="5.0" />
                </HBox.margin>
             </JFXButton>
-            <Label text="用户">
-               <HBox.margin>
-                  <Insets left="100.0" top="10.0" />
-               </HBox.margin>
-            </Label>
          </children>
          <BorderPane.margin>
             <Insets />
@@ -78,15 +71,15 @@
       </HBox>
    </top>
    <center>
-      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <Pane prefHeight="355.0" prefWidth="702.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXTabPane prefHeight="359.0" prefWidth="600.0">
+            <JFXTabPane layoutY="1.0" prefHeight="389.0" prefWidth="702.0">
                <tabs>
                   <Tab text="订单">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <JFXTreeTableView prefHeight="327.0" prefWidth="600.0" />
+                              <JFXTreeTableView fx:id="tableOrder" prefHeight="300.0" prefWidth="702.0" />
                            </children>
                         </AnchorPane>
                     </content>
@@ -95,7 +88,7 @@
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <JFXTreeTableView prefHeight="328.0" prefWidth="600.0" />
+                              <JFXTreeTableView prefHeight="300.0" prefWidth="702.0" />
                            </children>
                         </AnchorPane>
                     </content>
@@ -105,4 +98,20 @@
          </children>
       </Pane>
    </center>
+   <bottom>
+      <HBox alignment="CENTER" prefHeight="52.0" prefWidth="702.0" BorderPane.alignment="CENTER">
+         <children>
+            <JFXButton buttonType="RAISED" onAction="#pay" prefHeight="34.0" prefWidth="66.0" style="-fx-background-color: orange;" text="付款">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </JFXButton>
+            <JFXButton buttonType="RAISED" layoutX="10.0" layoutY="10.0" onAction="#refund" prefHeight="34.0" prefWidth="62.0" style="-fx-background-color: orange;" text="退订">
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </JFXButton>
+         </children>
+      </HBox>
+   </bottom>
 </BorderPane>

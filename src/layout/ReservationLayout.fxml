@@ -30,7 +30,7 @@
          <children>
             <Pane opacity="0.57" prefHeight="454.0" prefWidth="694.0" style="-fx-background-color: black;" />
             <Label layoutX="587.0" layoutY="415.0" prefHeight="17.0" prefWidth="98.0" text="Design by D.W." textFill="WHITE" />
-            <JFXButton fx:id="UserOrderBtn" layoutX="613.0" layoutY="25.0" prefHeight="40.0" prefWidth="61.0" style="-fx-border-color: #3b89c5;" text="..." textFill="WHITE">
+            <JFXButton fx:id="UserOrderBtn" layoutX="613.0" layoutY="25.0" onAction="#openUserTable" prefHeight="40.0" prefWidth="61.0" style="-fx-border-color: #3b89c5;" text="..." textFill="WHITE">
                <graphic>
                   <ImageView fitHeight="28.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                      <image>

@@ -2,20 +2,20 @@ package hust.UI;
 
 import com.jfoenix.controls.*;
 import hust.DB.DBConnection;
+import hust.Main;
 import hust.bean.Flight;
 import hust.bean.Passenger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
 
 public class ReservationController implements Initializable {
     public static ReservationController controller = null; // 单例模式
-
+    public static Scene reservationScene = null;
     public Pane orderPane; // 查询pane，处理查询的事务
 
     public Pane spinPane; // 用于过场
@@ -42,9 +42,6 @@ public class ReservationController implements Initializable {
     private ScrollPane scrollPane; // 滑动pane
 
     public Pane payPane; // 显示订单金额和付款
-    @FXML
-    private JFXButton UserOrderBtn; // 用户的订单信息按钮，按下可以打开一个新的窗口
-                                    // 显示用户的订单信息和通知信息
 
     @FXML
     private ToggleButton roundTripBtn; // 往返旅途
@@ -261,8 +258,7 @@ public class ReservationController implements Initializable {
     }
 
 
-    public void switchAnimation(Pane p1, Pane p2) {
-        popupList.setVisible(false);
+    public static void switchAnimation(Pane p1, Pane p2) {
         KeyValue p1Opacity = new KeyValue(p1.opacityProperty(), 0.0);
         KeyValue p2Opacity = new KeyValue(p2.opacityProperty(), 1.0);
 //        KeyValue p1Visibility = new KeyValue(p1.visibleProperty(), false);
@@ -441,6 +437,12 @@ public class ReservationController implements Initializable {
         }
     }
 
+    // 打开一个用户的订单信息窗口
+    @FXML
+    protected void openUserTable(ActionEvent event) {
+        Main.openNewWin(Main.id, "Open user's order table", "/layout/tableLayout.fxml");
+    }
+
     // -----------------------------flight pane implementation ------------------------------
     @FXML
     protected void flightPaneKeyHandle(KeyEvent event) {
@@ -533,17 +535,27 @@ public class ReservationController implements Initializable {
                     conn = DBConnection.getConnection();
                     conn.setAutoCommit(false); // 取消自动提交
                     // 首先生成订单信息
-                    String sqlOrder = "insert into T_Order (OrderNo, ContactName, ContactPNo)values(?,?,?);";
+                    String sqlOrder = "insert into T_Order (OrderNo, ContactName, ContactPNo, TicketNum, takeoffDate)values(?,?,?,?,?);";
                     PreparedStatement pstmt = conn.prepareStatement(sqlOrder);
                     int startONo = getNumFromDatabase(conn,"select count(*) from T_Order;");
                     String orderNo = String.format("%8d", ++startONo).replace(" ", "0");
                     pstmt.setString(1, orderNo);
                     pstmt.setString(2, contactNameText.getText());
                     pstmt.setString(3, contactPhoneText.getText());
-                    pstmt.executeUpdate(); // 执行第一次sql语句，插入一条记录
+                    pstmt.setInt(4, passengerObservableList.size());
+                    pstmt.setDate(5, takeoffDate);
+                    pstmt.executeUpdate(); // 执行第一次sql语句，插入一条记录到订单表中
+
+                    // 然后把该订单记录插入到用户订单表中
+                    String sqlUserOrder = "insert into T_User_Order values (?,?);";
+                    PreparedStatement userOrderStmt = conn.prepareStatement(sqlUserOrder);
+                    userOrderStmt.setString(1, Main.id);
+                    userOrderStmt.setString(2, orderNo);
+                    userOrderStmt.executeUpdate(); // 第2次执行sql语句，插入一条记录到用户订单表中
+
                     // 创建一些sql语句
                     String sqlPassenger = "insert into Passenger values(?,?,?,?,?);";
-                    String sqlTicket = "insert into Ticket values (?,?,?,?,?,?);";
+                    String sqlTicket = "insert into Ticket values (?,?,?,?,?);";
                     String queryPassenger = "select * from Passenger where PName like ?;";
 
                     float amount = 0.0f; // 用来统计订单的账单情况
@@ -569,7 +581,7 @@ public class ReservationController implements Initializable {
                         price = (seatC==1?fcprice:seatC==2?bcprice:ecprice);
 
                     } else {
-                        throw new SQLException("Can not flight information");
+                        throw new SQLException("Can not find flight information");
                     }
 
                     // 从数据库中得到乘客表中的表项数
@@ -589,7 +601,7 @@ public class ReservationController implements Initializable {
                             pstmt2.setShort(3, p.getCerType());
                             pstmt2.setString(4, p.getCerNo());
                             pstmt2.setShort(5, p.getpType());
-                            pstmt2.executeUpdate(); // 第2次执行，插入一条乘客记录
+                            pstmt2.executeUpdate(); // 第3次执行，插入一条乘客记录
                         } else {
                             p.setNo(prs.getString(1)); // 得到乘客的编号
                         }
@@ -599,10 +611,9 @@ public class ReservationController implements Initializable {
                         pstmt3.setString(1, ticketNo);
                         pstmt3.setString(2, flightLabel.getText());
                         pstmt3.setString(3, p.getNo());
-                        pstmt3.setDate(4, ReservationController.takeoffDate);
-                        pstmt3.setShort(5, seatC);
-                        pstmt3.setFloat(6, price);
-                        pstmt3.executeUpdate(); // 第3次执行sql语句，插入一张机票记录
+                        pstmt3.setShort(4, seatC);
+                        pstmt3.setFloat(5, price);
+                        pstmt3.executeUpdate(); // 第4次执行sql语句，插入一张机票记录
                         amount += p.getpType()==1?price:price/2; // 累计添加账单的总量,小孩子打折
 
                         // 把订单号和机票号插入到订单机票表中
@@ -610,7 +621,7 @@ public class ReservationController implements Initializable {
                         PreparedStatement insertOTStmt = conn.prepareStatement(insertOT);
                         insertOTStmt.setString(1, orderNo);
                         insertOTStmt.setString(2, ticketNo);
-                        insertOTStmt.executeUpdate(); // 第4次执行sql语句，插入一条记录到订单机票表中
+                        insertOTStmt.executeUpdate(); // 第5次执行sql语句，插入一条记录到订单机票表中
                         passengerNum++; // 每张票生成后，乘客数加一
                     }
                     // 修改座位表信息
@@ -619,16 +630,16 @@ public class ReservationController implements Initializable {
                     updateSeatStmt.setInt(1, seatRemain_t - passengerNum);
                     updateSeatStmt.setString(2, flightLabel.getText());
                     updateSeatStmt.setDate(3, takeoffDate);
-                    updateSeatStmt.executeUpdate(); // 第5次执行sql语句，更新座位数
+                    updateSeatStmt.executeUpdate(); // 第6次执行sql语句，更新座位数
                     // 生成账单
                     String insertPay = "insert into T_Bill values (?,?,?);";
                     PreparedStatement payStmt = conn.prepareStatement(insertPay);
                     payStmt.setString(1, orderNo);
                     payStmt.setFloat(2, amount);
                     payStmt.setInt(3,0);
-                    payStmt.executeUpdate(); // 第6次执行sql语句，插入一条记录到订单机票表中
+                    payStmt.executeUpdate(); // 第7次执行sql语句，插入一条记录到订单机票表中
 
-                    conn.commit(); // 最后的commit，让6次sql操作保持完整性
+                    conn.commit(); // 最后的commit，让7次sql操作保持完整性
                     ReservationController.amount = amount;
                     ReservationController.orderNo = orderNo;
                     payPaneAmountLabel.setText("订单金额：" + String.valueOf(amount) + "元");
@@ -780,8 +791,6 @@ public class ReservationController implements Initializable {
     //-------------------- error pane implementation------------------
     @FXML
     private Pane errorPane;
-    @FXML
-    private Label errorLabel;
 
     @FXML
     JFXButton errorPaneBackBtn;
