@@ -1,5 +1,6 @@
 package hust;
 
+import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import hust.DB.DBConnection;
 import hust.UI.ReservationController;
 import hust.UI.UserController;
@@ -26,6 +27,19 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/SignLayout.fxml"));
             Pane pane = fxmlLoader.load();
             scene = new Scene(pane, pane.getPrefWidth(),pane.getPrefHeight());
+
+            FXMLLoader fxmlLoader2 = new FXMLLoader(Main.obj.getClass().getResource("/layout/ReservationLayout.fxml"));
+            Pane pane2 = fxmlLoader2.load(); // 从fxml文件中载入一个窗口
+            ReservationController.controller = fxmlLoader2.getController();
+            ReservationController.reservationScene = new Scene(pane2, pane2.getPrefWidth(),pane2.getPrefHeight());
+            ReservationController.reservationScene.getStylesheets().add(Main.obj.getClass().
+                    getResource("/res/style/list-cell-color.css").toString()); // add CSS
+
+            FXMLLoader fxmlLoader3 = new FXMLLoader(Main.obj.getClass().getResource("/layout/tableLayout.fxml"));
+            Pane pane3 = fxmlLoader3.load(); // 从fxml文件中载入一个窗口
+            UserController.scene = new Scene(pane3, pane3.getPrefWidth(), pane3.getPrefHeight()); // 写入场景
+            UserController.controller = fxmlLoader3.getController();
+
             currentStage = stage;
             currentStage.setTitle("Flight");
             currentStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/res/images/flight.png")));
@@ -57,33 +71,15 @@ public class Main extends Application {
             Main.id = id;
             // 读取一个fxml文件
             if (url.contains("ReservationLayout.fxml")) {
-                if (ReservationController.reservationScene == null) {
-                    FXMLLoader fxmlLoader = new FXMLLoader(Main.obj.getClass().getResource(url));
-                    Pane pane = fxmlLoader.load(); // 从fxml文件中载入一个窗口
-                    Main.scene = new Scene(pane, pane.getPrefWidth(), pane.getPrefHeight()); // 写入场景
-                    ReservationController.controller = fxmlLoader.getController();
-                    ReservationController.reservationScene = Main.scene;
-                    Main.scene.getStylesheets().add(Main.obj.getClass().
-                            getResource("/res/style/list-cell-color.css").toString());
-                    Main.setWindowToCenter();
-                } else {
-                    Main.scene = ReservationController.reservationScene;
-                }
+                Main.scene = ReservationController.reservationScene;
+                setWindowToCenter();
             } else if (url.contains("tableLayout.fxml")) {
-                if (UserController.scene == null) {
-                    FXMLLoader fxmlLoader = new FXMLLoader(Main.obj.getClass().getResource(url));
-                    Pane pane = fxmlLoader.load(); // 从fxml文件中载入一个窗口
-                    Main.scene = new Scene(pane, pane.getPrefWidth(), pane.getPrefHeight()); // 写入场景
-                    UserController.scene = Main.scene;
-                    UserController.controller = fxmlLoader.getController();
-                } else {
-                    Main.scene = UserController.scene;
-                    UserController.controller.updateOrderList(Main.id);
-                }
+                Main.scene = UserController.scene;
+                UserController.controller.updateOrderList(Main.id);
             }
             Main.currentStage.setScene(Main.scene); // 把场景加载到当前的程序中
             Main.currentStage.show();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

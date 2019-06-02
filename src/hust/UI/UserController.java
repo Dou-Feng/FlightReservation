@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sun.tools.corba.se.idl.constExpr.Not;
 import com.sun.tools.corba.se.idl.constExpr.Or;
 import hust.DB.DBConnection;
 import hust.Main;
@@ -21,10 +22,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 
@@ -33,11 +31,11 @@ public class UserController implements Initializable {
     public static UserController controller = null;
     public JFXTreeTableView<Order> tableOrder;
     public JFXTextField text_filter;
+    public JFXTreeTableView<Notify> tableNotify;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, String> idColumn = new JFXTreeTableColumn<>("订单号");
         idColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, String> param) -> {
             if (idColumn.validateValue(param)) {
@@ -46,7 +44,6 @@ public class UserController implements Initializable {
                 return idColumn.getComputedValue(param);
             }
         });
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, String> ctctName = new JFXTreeTableColumn<>("联系人");
         ctctName.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, String> param) -> {
             if (ctctName.validateValue(param)) {
@@ -55,7 +52,6 @@ public class UserController implements Initializable {
                 return ctctName.getComputedValue(param);
             }
         });
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, String> ctPhone = new JFXTreeTableColumn<>("电话号码");
         ctPhone.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, String> param) -> {
             if (ctPhone.validateValue(param)) {
@@ -64,7 +60,6 @@ public class UserController implements Initializable {
                 return ctPhone.getComputedValue(param);
             }
         });
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, String> takeoffDt = new JFXTreeTableColumn<>("行程日期");
         takeoffDt.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, String> param) -> {
             if (takeoffDt.validateValue(param)) {
@@ -73,7 +68,6 @@ public class UserController implements Initializable {
                 return takeoffDt.getComputedValue(param);
             }
         });
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, Number> ttNum = new JFXTreeTableColumn<>("机票数");
         ttNum.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, Number> param) -> {
             if (ttNum.validateValue(param)) {
@@ -82,7 +76,6 @@ public class UserController implements Initializable {
                 return ttNum.getComputedValue(param);
             }
         });
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, Number> amt = new JFXTreeTableColumn<>("订单金额");
         amt.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, Number> param) -> {
             if (amt.validateValue(param)) {
@@ -91,7 +84,6 @@ public class UserController implements Initializable {
                 return amt.getComputedValue(param);
             }
         });
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, String> ispayy = new JFXTreeTableColumn<>("是否付款");
         ispayy.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, String> param) -> {
             if (ispayy.validateValue(param)) {
@@ -100,7 +92,6 @@ public class UserController implements Initializable {
                 return ispayy.getComputedValue(param);
             }
         });
-        // 创建列来显示订单号
         JFXTreeTableColumn<Order, String> dt = new JFXTreeTableColumn<>("订单时间");
         dt.setCellValueFactory((TreeTableColumn.CellDataFeatures<Order, String> param) -> {
             if (dt.validateValue(param)) {
@@ -115,17 +106,83 @@ public class UserController implements Initializable {
         tableOrder.getColumns().setAll(idColumn, ctctName, ctPhone, takeoffDt, ttNum, ispayy, amt, dt);
         tableOrder.setColumnResizePolicy(JFXTreeTableView.CONSTRAINED_RESIZE_POLICY);
 
+
+        // 第二个列表
+        JFXTreeTableColumn<Notify, String> ticketNo = new JFXTreeTableColumn<>("机票编号");
+        ticketNo.setCellValueFactory((TreeTableColumn.CellDataFeatures<Notify, String> param) -> {
+            if (ticketNo.validateValue(param)) {
+                return param.getValue().getValue().ticketNo;
+            } else {
+                return ticketNo.getComputedValue(param);
+            }
+        });
+        JFXTreeTableColumn<Notify, String> passType = new JFXTreeTableColumn<>("乘客姓名");
+        passType.setCellValueFactory((TreeTableColumn.CellDataFeatures<Notify, String> param) -> {
+            if (passType.validateValue(param)) {
+                return param.getValue().getValue().passengerName;
+            } else {
+                return passType.getComputedValue(param);
+            }
+        });
+        JFXTreeTableColumn<Notify, String> tkofTime = new JFXTreeTableColumn<>("起飞日期");
+        tkofTime.setCellValueFactory((TreeTableColumn.CellDataFeatures<Notify, String> param) -> {
+            if (tkofTime.validateValue(param)) {
+                return param.getValue().getValue().takeoffDate;
+            } else {
+                return tkofTime.getComputedValue(param);
+            }
+        });
+        JFXTreeTableColumn<Notify, String> tkofCity = new JFXTreeTableColumn<>("起飞城市");
+        tkofCity.setCellValueFactory((TreeTableColumn.CellDataFeatures<Notify, String> param) -> {
+            if (tkofCity.validateValue(param)) {
+                return param.getValue().getValue().takeoffCity;
+            } else {
+                return tkofCity.getComputedValue(param);
+            }
+        });
+        JFXTreeTableColumn<Notify, String> ladCity = new JFXTreeTableColumn<>("降落城市");
+        ladCity.setCellValueFactory((TreeTableColumn.CellDataFeatures<Notify, String> param) -> {
+            if (ladCity.validateValue(param)) {
+                return param.getValue().getValue().landingCity;
+            } else {
+                return ladCity.getComputedValue(param);
+            }
+        });
+        JFXTreeTableColumn<Notify, String> stp = new JFXTreeTableColumn<>("座位类型");
+        stp.setCellValueFactory((TreeTableColumn.CellDataFeatures<Notify, String> param) -> {
+            if (stp.validateValue(param)) {
+                return param.getValue().getValue().seatClass;
+            } else {
+                return stp.getComputedValue(param);
+            }
+        });
+
+
+        tableNotify.setEditable(false);
+        tableNotify.setShowRoot(false);
+        tableNotify.getColumns().setAll(ticketNo, passType, tkofTime, tkofCity, ladCity, stp);
+        tableNotify.setColumnResizePolicy(JFXTreeTableView.CONSTRAINED_RESIZE_POLICY);
         updateOrderList(Main.id); // 更新订单信息
+        updateNotifyList(); // 更新通知
 
         // 搜索功能
         text_filter.textProperty().addListener((o, oldVal, newVal) -> {
-            tableOrder.setPredicate(patientProp -> {
-                final Order order = patientProp.getValue();
+            tableOrder.setPredicate(orderProp -> {
+                final Order order = orderProp.getValue();
                 return order.getOrderNo().contains(newVal)
                         || order.getContactName().contains(newVal)
                         || order.getContactPhone().contains(newVal)
                         || order.getTakeoffDate().contains(newVal)
                         || order.getOrderTime().contains(newVal);
+            });
+            tableNotify.setPredicate(notifyProp -> {
+                final Notify notify = notifyProp.getValue();
+                return notify.getTicketNo().contains(newVal)
+                        || notify.getPassengerName().contains(newVal)
+                        || notify.getTakeoffCity().contains(newVal)
+                        || notify.getLandingCity().contains(newVal)
+                        || notify.getSeatClass().contains(newVal)
+                        || notify.getTakeoffDate().contains(newVal);
             });
         });
     }
@@ -143,10 +200,16 @@ public class UserController implements Initializable {
             ReservationController.showDialog("订单已经付款");
             return;
         }
-        // 修改数据库中T_Bill的数据
+
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();
+            Date date = getDBDate();
+            if (Date.valueOf(order.getTakeoffDate()).compareTo(date) < 0) {
+                ReservationController.showDialog("超过了支付的时间");
+                return;
+            }
+            // 修改数据库中T_Bill的数据
             String sql = "update T_Bill set IsPay=1 where OrderNo=?";
             conn.setAutoCommit(false);
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -154,6 +217,7 @@ public class UserController implements Initializable {
             if (stmt.executeUpdate() > 0) {
                 ReservationController.showDialog("支付成功");
                 updateOrderList(Main.id);
+                updateNotifyList(); // 同时更新通知列表
             } else {
                 ReservationController.showDialog("支付失败");
             }
@@ -169,6 +233,19 @@ public class UserController implements Initializable {
         }
     }
 
+    public static Date getDBDate() throws SQLException{
+        Connection conn = DBConnection.getConnection();
+        String sqlDate = "select Date(now());";
+        Statement dateStmt = conn.createStatement();
+        ResultSet dateRs = dateStmt.executeQuery(sqlDate);
+        Date date = null;
+        if (dateRs.next()) {
+            return dateRs.getDate(1);
+        } else {
+            throw new SQLException("Query date failed!");
+        }
+    }
+
     @FXML
     protected void refund(ActionEvent event) {
         Order order;
@@ -181,6 +258,11 @@ public class UserController implements Initializable {
         // 删除数据库中ticket,T_Order的数据，并级联删除T_Order_Ticket, T_User_Order中的记录
         Connection conn = null;
         try {
+            Date date = getDBDate();
+            if (Date.valueOf(order.getTakeoffDate()).compareTo(date)  < 0) { // 航班起飞之后的不能退票
+                ReservationController.showDialog("超过了退票的时间");
+                return;
+            }
             conn = DBConnection.getConnection();
             // 删除机票
             String sqlTicket = "delete from Ticket where TNo in " +
@@ -218,6 +300,7 @@ public class UserController implements Initializable {
     @FXML
     protected void refresh(ActionEvent event) {
         updateOrderList(Main.id);
+        updateNotifyList(); // 更新通知
     }
 
     @FXML
@@ -251,10 +334,30 @@ public class UserController implements Initializable {
         }
         TreeItem<Order> orderRoot = new RecursiveTreeItem<>(orders, RecursiveTreeObject::getChildren);
         tableOrder.setRoot(orderRoot);
-
-
     }
 
+    public void updateNotifyList() {
+        ObservableList<Notify> notifies = FXCollections.observableArrayList();
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "select * from v_nofity where v_nofity.OrderNo in " +
+                    "(select OrderNo from T_User_Order where T_User_Order.Username=?)";
+            PreparedStatement pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, Main.id);
+            ResultSet rs = pStmt.executeQuery();
+            while(rs.next()) {
+                short seat = rs.getShort(7);
+                String seatC = seat==1?"头等舱":seat==2?"商务舱":"经济舱";
+                notifies.add(new Notify(rs.getString(2), rs.getString(3), rs.getDate(4).toString(), rs.getString(5),
+                        rs.getString(6), seatC));
+            }
+        } catch (SQLException e) {
+            ReservationController.showDialog("更新列表失败");
+        }
+        TreeItem<Notify> notifyRoot = new RecursiveTreeItem<>(notifies, RecursiveTreeObject::getChildren);
+        tableNotify.setRoot(notifyRoot);
+    }
 
     public static class Order extends RecursiveTreeObject<Order> {
         private final SimpleStringProperty orderNo;
@@ -375,6 +478,95 @@ public class UserController implements Initializable {
         }
     }
 
+    public static class Notify extends RecursiveTreeObject<Notify> {
+        private final SimpleStringProperty ticketNo;
+        private final SimpleStringProperty passengerName;
+        private final SimpleStringProperty takeoffDate;
+        private final SimpleStringProperty takeoffCity;
+        private final SimpleStringProperty landingCity;
+        private final SimpleStringProperty seatClass;
 
+        public Notify(String ticketNo, String passengerName, String takeoffDate,
+                      String takeoffCity, String landingCity, String seatClass) {
+            this.ticketNo = new SimpleStringProperty(ticketNo);
+            this.passengerName = new SimpleStringProperty(passengerName);
+            this.takeoffDate = new SimpleStringProperty(takeoffDate);
+            this.takeoffCity = new SimpleStringProperty(takeoffCity);
+            this.landingCity = new SimpleStringProperty(landingCity);
+            this.seatClass = new SimpleStringProperty(seatClass);
+        }
+
+        public String getTicketNo() {
+            return ticketNo.get();
+        }
+
+        public SimpleStringProperty ticketNoProperty() {
+            return ticketNo;
+        }
+
+        public void setTicketNo(String ticketNo) {
+            this.ticketNo.set(ticketNo);
+        }
+
+        public String getPassengerName() {
+            return passengerName.get();
+        }
+
+        public SimpleStringProperty passengerNameProperty() {
+            return passengerName;
+        }
+
+        public void setPassengerName(String passengerName) {
+            this.passengerName.set(passengerName);
+        }
+
+        public String getTakeoffDate() {
+            return takeoffDate.get();
+        }
+
+        public SimpleStringProperty takeoffDateProperty() {
+            return takeoffDate;
+        }
+
+        public void setTakeoffDate(String takeoffDate) {
+            this.takeoffDate.set(takeoffDate);
+        }
+
+        public String getTakeoffCity() {
+            return takeoffCity.get();
+        }
+
+        public SimpleStringProperty takeoffCityProperty() {
+            return takeoffCity;
+        }
+
+        public void setTakeoffCity(String takeoffCity) {
+            this.takeoffCity.set(takeoffCity);
+        }
+
+        public String getLandingCity() {
+            return landingCity.get();
+        }
+
+        public SimpleStringProperty landingCityProperty() {
+            return landingCity;
+        }
+
+        public void setLandingCity(String landingCity) {
+            this.landingCity.set(landingCity);
+        }
+
+        public String getSeatClass() {
+            return seatClass.get();
+        }
+
+        public SimpleStringProperty seatClassProperty() {
+            return seatClass;
+        }
+
+        public void setSeatClass(String seatClass) {
+            this.seatClass.set(seatClass);
+        }
+    }
 
 }

@@ -25,6 +25,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
@@ -127,6 +128,10 @@ public class ReservationController implements Initializable {
             }
 
         });
+
+        setDatePickerDisablePast(departingDate);
+        setDatePickerDisablePast(returningDate);
+
         // for debug
         flightObservableList.add(new Flight());
         // 初始按钮的一些设置
@@ -153,6 +158,21 @@ public class ReservationController implements Initializable {
 
     }
 
+    private void setDatePickerDisablePast(DatePicker dp) {
+        dp.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                try {
+                    LocalDate today = UserController.getDBDate().toLocalDate();
+                    setDisable(empty || date.compareTo(today) < 0);
+                } catch (SQLException e) {
+                    showDialog("数据库查询失败");
+                }
+            }
+        });
+    }
+
 
 
     //---------------------- order pane implementation-----------------------
@@ -172,26 +192,33 @@ public class ReservationController implements Initializable {
     // 处理搜索按钮按下之后的事件
     protected void searchFlight(ActionEvent event) {
         // 检查输入是否合法
-        boolean valid = true;
         if (flyFromText.getText().isEmpty()) {
-            valid = false;
             // 设置颜色变化
-        }
-        if (flyToText.getText().isEmpty()) {
-            valid = false;
-            // 设置颜色变化
-        }
-        if (departingDate.getEditor().getText().isEmpty()) {
-            valid = false;
-            // 设置颜色变化
-        }
-
-        if (!valid) {
-            // open a dialog and say sorry
-            System.out.println("Debug: Input the right information");
-            showDialog("请输入正确的信息");
+            showDialog("请输入正确的起飞城市");
             return;
         }
+        if (flyToText.getText().isEmpty()) {
+            // 设置颜色变化
+            showDialog("请输入正确的目的城市");
+            return;
+        }
+        if (departingDate.getEditor().getText().isEmpty()) {
+            // 设置颜色变化
+            showDialog("请输入正确的日期");
+            return;
+        }
+
+        try {
+            Date date = UserController.getDBDate();
+            if (Date.valueOf(departingDate.getEditor().getText()).compareTo(date) < 0) {
+                showDialog("请输入正确的日期");
+                return;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showDialog("数据库查询出错");
+        }
+
         String takeoffCity = flyFromText.getText();
         String landingCity = flyToText.getText();
         Date takeoffDate = Date.valueOf(departingDate.getEditor().getText());
