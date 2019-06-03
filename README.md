@@ -29,7 +29,6 @@ Java JDK 1.8.0.211
 
 序号|表名
 -|-
-
 1|AirCraft
 2|Flight
 3|Passenger
