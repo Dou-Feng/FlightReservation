@@ -2,6 +2,7 @@ package hust;
 
 import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import hust.DB.DBConnection;
+import hust.UI.ManagerController;
 import hust.UI.ReservationController;
 import hust.UI.UserController;
 import javafx.application.Application;
@@ -9,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -40,6 +42,10 @@ public class Main extends Application {
             UserController.scene = new Scene(pane3, pane3.getPrefWidth(), pane3.getPrefHeight()); // 写入场景
             UserController.controller = fxmlLoader3.getController();
 
+            FXMLLoader fxmlLoader4 = new FXMLLoader(Main.obj.getClass().getResource("/layout/managerLayout.fxml"));
+            BorderPane pane4 = fxmlLoader4.load(); // 从fxml文件中载入一个窗口
+            ManagerController.scene = new Scene(pane4, pane4.getPrefWidth(), pane4.getPrefHeight()); // 写入场景
+            ManagerController.controller = fxmlLoader4.getController();
             currentStage = stage;
             currentStage.setTitle("Flight");
             currentStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/res/images/flight.png")));
@@ -76,6 +82,8 @@ public class Main extends Application {
             } else if (url.contains("tableLayout.fxml")) {
                 Main.scene = UserController.scene;
                 UserController.controller.updateOrderList(Main.id);
+            } else if (url.contains("managerLayout.fxml")) {
+                Main.scene = ManagerController.scene;
             }
             Main.currentStage.setScene(Main.scene); // 把场景加载到当前的程序中
             Main.currentStage.show();

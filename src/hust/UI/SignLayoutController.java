@@ -109,7 +109,7 @@ public class SignLayoutController implements Initializable {
 
                                         Main.openNewWin(id, "User Sign In Successfully!","/layout/ReservationLayout.fxml");
                                     } else {
-                                        createAlert("登录成功暂未实现，请谅解。");
+                                        Main.openNewWin(id, "Manager sign in", "/layout/managerLayout.fxml");
                                     }
                                 } else {
                                     createAlert("用户名或密码错误");

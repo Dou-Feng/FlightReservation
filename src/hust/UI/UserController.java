@@ -156,8 +156,6 @@ public class UserController implements Initializable {
                 return stp.getComputedValue(param);
             }
         });
-
-
         tableNotify.setEditable(false);
         tableNotify.setShowRoot(false);
         tableNotify.getColumns().setAll(ticketNo, passType, tkofTime, tkofCity, ladCity, stp);

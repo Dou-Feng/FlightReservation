@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="702.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hust.UI.UserController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="440.0" prefWidth="710.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hust.UI.UserController">
    <top>
       <HBox alignment="CENTER_LEFT" prefHeight="64.0" prefWidth="702.0" BorderPane.alignment="CENTER">
          <children>
@@ -73,14 +73,14 @@
    <center>
       <Pane prefHeight="355.0" prefWidth="702.0" BorderPane.alignment="CENTER">
          <children>
-            <JFXTabPane layoutY="1.0" prefHeight="389.0" prefWidth="702.0">
+            <JFXTabPane layoutY="1.0" prefHeight="389.0" prefWidth="710.0">
                <tabs>
                   <Tab text="订单">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <JFXTreeTableView fx:id="tableOrder" prefHeight="300.0" prefWidth="702.0" />
-                              <HBox alignment="CENTER" layoutY="300.0" prefHeight="52.0" prefWidth="702.0">
+                              <JFXTreeTableView fx:id="tableOrder" prefHeight="300.0" prefWidth="711.0" />
+                              <HBox alignment="CENTER" layoutX="4.0" layoutY="303.0" prefHeight="36.0" prefWidth="702.0">
                                  <children>
                                     <JFXButton buttonType="RAISED" onAction="#pay" prefHeight="34.0" prefWidth="66.0" style="-fx-background-color: orange;" text="付款">
                                        <HBox.margin>
@@ -102,7 +102,7 @@
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <JFXTreeTableView fx:id="tableNotify" prefHeight="348.0" prefWidth="702.0" />
+                              <JFXTreeTableView fx:id="tableNotify" prefHeight="348.0" prefWidth="710.0" />
                            </children>
                         </AnchorPane>
                     </content>
