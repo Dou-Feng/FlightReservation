@@ -4,13 +4,14 @@ Book your ticket from this system.
 ## 预览
 
 ### 主界面
-![avatar](./Preview/main.png)
+![avatar](https://github.com/Troubledesigner/FlightReservation/blob/master/Preview/main.png)
 
 ### 选择航班
-![avatar](./Preview/flightTable.png)
+![avatar](https://github.com/Troubledesigner/FlightReservation/blob/master/Preview/flightTable.png)
 
 ### 订单详情
-![avatar](./Preview/orderTable.png)
+![avatar](https://github.com/Troubledesigner/FlightReservation/blob/master/Preview/orderTable.png)
+
 ## 安装方法
 
 本系统使用Java语言开发，在IDEA集成开发环境下进行。
