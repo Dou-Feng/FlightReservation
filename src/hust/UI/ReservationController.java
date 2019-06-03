@@ -564,7 +564,9 @@ public class ReservationController implements Initializable {
                     // 首先生成订单信息
                     String sqlOrder = "insert into T_Order (OrderNo, ContactName, ContactPNo, TicketNum, takeoffDate)values(?,?,?,?,?);";
                     PreparedStatement pstmt = conn.prepareStatement(sqlOrder);
-                    int startONo = getNumFromDatabase(conn,"select count(*) from T_Order;");
+
+                    String maxOrderNo = getMaxNo(conn, "select OrderNo from T_Order order by OrderNo desc;");
+                    int startONo = Integer.valueOf(maxOrderNo);
                     String orderNo = String.format("%8d", ++startONo).replace(" ", "0");
                     pstmt.setString(1, orderNo);
                     pstmt.setString(2, contactNameText.getText());
@@ -612,9 +614,11 @@ public class ReservationController implements Initializable {
                     }
 
                     // 从数据库中得到乘客表中的表项数
-                    int startPNo = getNumFromDatabase(conn, "select count(*) from Passenger;");
+                    String passengerMaxNo = getMaxNo(conn, "select PNo from Passenger order by PNo desc;");
+                    int startPNo = Integer.valueOf(passengerMaxNo);
                     // 从数据库中获取机票的最大编号信息
-                    int startTNo = getNumFromDatabase(conn, "select count(*) from Ticket;");
+                    String ticketMaxNo = getMaxNo(conn, "select TNo from Ticket order by TNo desc;");
+                    int startTNo = Integer.valueOf(ticketMaxNo);
                     for (Passenger p : passengerObservableList) {
                         PreparedStatement passStmt = conn.prepareStatement(queryPassenger);
                         passStmt.setString(1, p.getName());
@@ -690,12 +694,13 @@ public class ReservationController implements Initializable {
 
     }
 
-    private int getNumFromDatabase(Connection conn, String sql) throws SQLException{
+    private String getMaxNo(Connection conn,String sql) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
         rs.next();
-        return rs.getInt(1);
+        return rs.getString(1);
     }
+
 
     @FXML
     protected void backToFlight(ActionEvent event) {
