@@ -1,5 +1,6 @@
 # FlightReservation
-Book your ticket from this system. 
+简单的航班预订系统，实现了登录界面、航班的检索、信息的录入、用户订单信息报表、用户取票通知和凭证报表、管理员航班报表、管理员录入飞机信息、管理员录入航班信息、管理员录入座位信息等功能。
+
 
 ## 预览
 
@@ -43,3 +44,13 @@ Java JDK 1.8.0.211
 *建表语句见文件mysql.sql*
 
 *创建触发器的语句见trigger.sql*
+
+*创建视图的语句见view.sql*
+
+## Copyright
+仅供参考，请勿直接照搬照抄。
+
+
+
+
+
