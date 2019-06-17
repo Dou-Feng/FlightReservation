@@ -7,7 +7,7 @@ public class DBConnection {
     private final static String URL = "jdbc:mysql://localhost:3306/FlightReservation?autoReconnect=true&useSSL=false";
     private final static String driver = "com.mysql.jdbc.Driver";
     private final static String user = "root";
-    private final static String password = "famine";
+    private final static String password = "famine1028";
     private static Connection connection = null;
     static {
         try {
@@ -23,9 +23,13 @@ public class DBConnection {
     }
 
     public static Connection getConnection() {
-        if (connection == null) {
-            System.err.println("Connection is shutdown");
-            reconnection();
+        try {
+            if (connection == null || connection.isClosed()) {
+                System.err.println("Connection is shutdown");
+                reconnection();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return connection;
     }

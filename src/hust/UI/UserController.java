@@ -262,6 +262,19 @@ public class UserController implements Initializable {
                 return;
             }
             conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            // 得到航班编号、座位类型
+            int seatClass = 0;
+            String Fno = null;
+            String querySeatClass = "select Ticket.FNo ,Ticket.ClassType from Ticket where TNo in " +
+                    "(select TNo from T_Order_Ticket where OrderNo=?)";
+            PreparedStatement seatClassStmt = conn.prepareStatement(querySeatClass);
+            seatClassStmt.setString(1, order.getOrderNo());
+            ResultSet scRs = seatClassStmt.executeQuery();
+            if (scRs.next()) {
+                Fno = scRs.getString(1); // 得到机票的航班
+                seatClass = scRs.getInt(2); // 得到机票的座位类型
+            }
             // 删除机票
             String sqlTicket = "delete from Ticket where TNo in " +
                     "(select TNo from T_Order_Ticket where OrderNo=?)";
@@ -271,10 +284,19 @@ public class UserController implements Initializable {
             if ((num = tickStmt.executeUpdate()) > 0) {
                 System.out.println("删除的票数为：" + num);
             }
+
+            // 更新座位信息
+            String seatClassStr = seatClass==1?"FCRemain":seatClass==2?"BCRemain":"ECRemain";
+            String updateSeat = "update Seats set " + seatClassStr +
+                                    "=Seats." + seatClassStr + "+? where Seats.FNo=? and Seats.Date=?;";
+            PreparedStatement upStmt = conn.prepareStatement(updateSeat);
+            upStmt.setInt(1, num);
+            upStmt.setString(2, Fno);
+            upStmt.setDate(3, Date.valueOf(order.getTakeoffDate()));
+            upStmt.executeUpdate();
             // 删除订单
             String sql = "delete from T_Order where OrderNo=?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            conn.setAutoCommit(false);
             stmt.setString(1, order.getOrderNo());
             if (stmt.executeUpdate() > 0) {
                 ReservationController.showDialog("退票成功");

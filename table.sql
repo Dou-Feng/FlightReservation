@@ -84,20 +84,6 @@ create table T_Order
 create index Order_ContactName_index
     on T_Order (ContactName);
 
--- auto-generated definition
-create table T_Order_Ticket
-(
-    OrderNo char(8)  not null,
-    TNo     char(13) not null,
-    primary key (OrderNo, TNo),
-    constraint T_Order_Ticket_T_Order_OrderNo_fk
-        foreign key (OrderNo) references T_Order (OrderNo)
-            on delete cascade,
-    constraint T_Order_Ticket_Ticket_TNo_fk
-        foreign key (TNo) references Ticket (TNo)
-            on delete cascade
-)
-    comment 'Relation between order and ticket';
 
 -- auto-generated definition
 create table T_User
@@ -147,4 +133,21 @@ create index Ticket_FlightNo_index
 
 create index Ticket_PNo_index
     on Ticket (PNo);
+
+-- auto-generated definition
+create table T_Order_Ticket
+(
+    OrderNo char(8)  not null,
+    TNo     char(13) not null,
+    primary key (OrderNo, TNo),
+    constraint T_Order_Ticket_T_Order_OrderNo_fk
+        foreign key (OrderNo) references T_Order (OrderNo)
+            on delete cascade,
+    constraint T_Order_Ticket_Ticket_TNo_fk
+        foreign key (TNo) references Ticket (TNo)
+            on delete cascade
+)
+    comment 'Relation between order and ticket';
+
+
 

@@ -244,9 +244,10 @@ public class ReservationController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                Connection connection = null;
                 try {
                     // 处理查询
-                    Connection connection = DBConnection.getConnection();
+                    connection = DBConnection.getConnection();
                     String sql = "select * from v_flight where Date=? and TakeoffCity=? and LandingCity=? and " +
                                     "FCRemain+BCRemain+ECRemain>=? order by TakeoffTime asc";
                     PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -275,7 +276,6 @@ public class ReservationController implements Initializable {
                         num++;
                     }
                     switchAnimation(spinPane, flightPane);
-//                    System.out.println("result number: " + num);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -565,6 +565,8 @@ public class ReservationController implements Initializable {
                     String sqlOrder = "insert into T_Order (OrderNo, ContactName, ContactPNo, TicketNum, takeoffDate)values(?,?,?,?,?);";
                     PreparedStatement pstmt = conn.prepareStatement(sqlOrder);
 
+                    String sqlMoa = "select OrderNo from T_Order order by OrderNo desc;";
+                    conn.createStatement().executeQuery(sqlMoa);
                     String maxOrderNo = getMaxNo(conn, "select OrderNo from T_Order order by OrderNo desc;");
                     int startONo = Integer.valueOf(maxOrderNo);
                     String orderNo = String.format("%8d", ++startONo).replace(" ", "0");
@@ -594,7 +596,7 @@ public class ReservationController implements Initializable {
                     int seatRemain_t = 0; // 用来记录剩余座位数
                     String seatRemain =  (seatC==1?"FCRemain":seatC==2?"BCRemain":"ECRemain");
                     // 从视图中查询到座位的价格和剩余座位数
-                    String sqlFlightInfo = "select * from v_flight where Date=? and FNo=? ";
+                    String sqlFlightInfo = "select * from v_flight where Date=? and FNo=?;";
                     PreparedStatement prStmt = conn.prepareStatement(sqlFlightInfo);
                     prStmt.setString(2, flightLabel.getText());
                     prStmt.setDate(1, takeoffDate);
@@ -637,15 +639,16 @@ public class ReservationController implements Initializable {
                             p.setNo(prs.getString(1)); // 得到乘客的编号
                         }
                         // 准备插入一张机票信息：机票编号、航班编号、乘客编号、起飞时间、座位类型、票价
+                        amount += p.getpType()==1?price:price/2; // 累计添加账单的总量,小孩子打折
                         PreparedStatement pstmt3 = conn.prepareStatement(sqlTicket);
                         String ticketNo = String.format("%13d", ++startTNo).replace(" ", "0");
                         pstmt3.setString(1, ticketNo);
                         pstmt3.setString(2, flightLabel.getText());
                         pstmt3.setString(3, p.getNo());
                         pstmt3.setShort(4, seatC);
-                        pstmt3.setFloat(5, price);
+                        pstmt3.setFloat(5, p.getpType()==1?price:price/2);
                         pstmt3.executeUpdate(); // 第4次执行sql语句，插入一张机票记录
-                        amount += p.getpType()==1?price:price/2; // 累计添加账单的总量,小孩子打折
+
 
                         // 把订单号和机票号插入到订单机票表中
                         String insertOT = "insert into T_Order_Ticket values (?,?)";
@@ -668,7 +671,7 @@ public class ReservationController implements Initializable {
                     payStmt.setString(1, orderNo);
                     payStmt.setFloat(2, amount);
                     payStmt.setInt(3,0);
-                    payStmt.executeUpdate(); // 第7次执行sql语句，插入一条记录到订单机票表中
+                    payStmt.executeUpdate(); // 第7次执行sql语句，插入一条记录到账单信息表中
 
                     conn.commit(); // 最后的commit，让7次sql操作保持完整性
                     ReservationController.amount = amount;
@@ -697,8 +700,10 @@ public class ReservationController implements Initializable {
     private String getMaxNo(Connection conn,String sql) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
-        rs.next();
-        return rs.getString(1);
+        if(rs.next())
+            return rs.getString(1);
+        else
+            return "0";
     }
 
 

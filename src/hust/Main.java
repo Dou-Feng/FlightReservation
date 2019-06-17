@@ -1,6 +1,5 @@
 package hust;
 
-import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import hust.DB.DBConnection;
 import hust.UI.ManagerController;
 import hust.UI.ReservationController;
@@ -14,8 +13,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Main extends Application {
     public static Object obj = null;

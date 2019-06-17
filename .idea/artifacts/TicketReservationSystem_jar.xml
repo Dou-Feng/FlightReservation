@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="TicketReservationSystem:jar">
+    <output-path>$USER_HOME$/Downloads</output-path>
+    <root id="archive" name="TicketReservationSystem.jar">
+      <element id="module-output" name="TicketReservationSystem" />
+      <element id="extracted-dir" path="$USER_HOME$/Java-lib/charm-glisten-4.4.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Java-lib/mysql-connector-java-5.1.47.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Java-lib/jfoenix-8.0.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Java-lib/controlsfx-8.40.14/controlsfx-8.40.14.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Java-lib/controlsfx-8.40.14/controlsfx-samples-8.40.14.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Java-lib/controlsfx-8.40.14/fxsampler-1.0.10.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

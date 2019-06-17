@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_ticketreservationsystem" default="compile.module.ticketreservationsystem">
+  <dirname property="module.ticketreservationsystem.basedir" file="${ant.file.module_ticketreservationsystem}"/>
+  
+  <property name="module.jdk.home.ticketreservationsystem" value="${jdk.home.1.8}"/>
+  <property name="module.jdk.bin.ticketreservationsystem" value="${jdk.bin.1.8}"/>
+  <property name="module.jdk.classpath.ticketreservationsystem" value="jdk.classpath.1.8"/>
+  
+  <property name="compiler.args.ticketreservationsystem" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="ticketreservationsystem.output.dir" value="${module.ticketreservationsystem.basedir}/out/production/TicketReservationSystem"/>
+  <property name="ticketreservationsystem.testoutput.dir" value="${module.ticketreservationsystem.basedir}/out/test/TicketReservationSystem"/>
+  
+  <path id="ticketreservationsystem.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="ticketreservationsystem.module.production.classpath">
+    <path refid="${module.jdk.classpath.ticketreservationsystem}"/>
+    <path refid="library.mysql-connector-java-5.1.47.classpath"/>
+    <path refid="library.controlsfx-8.40.14.classpath"/>
+    <path refid="library.jfoenix-8.0.8.classpath"/>
+    <path refid="library.charm-glisten-4.4.1.classpath"/>
+  </path>
+  
+  <path id="ticketreservationsystem.runtime.production.module.classpath">
+    <pathelement location="${ticketreservationsystem.output.dir}"/>
+    <path refid="library.mysql-connector-java-5.1.47.classpath"/>
+    <path refid="library.controlsfx-8.40.14.classpath"/>
+    <path refid="library.jfoenix-8.0.8.classpath"/>
+    <path refid="library.charm-glisten-4.4.1.classpath"/>
+  </path>
+  
+  <path id="ticketreservationsystem.module.classpath">
+    <path refid="${module.jdk.classpath.ticketreservationsystem}"/>
+    <pathelement location="${ticketreservationsystem.output.dir}"/>
+    <path refid="library.mysql-connector-java-5.1.47.classpath"/>
+    <path refid="library.controlsfx-8.40.14.classpath"/>
+    <path refid="library.jfoenix-8.0.8.classpath"/>
+    <path refid="library.charm-glisten-4.4.1.classpath"/>
+  </path>
+  
+  <path id="ticketreservationsystem.runtime.module.classpath">
+    <pathelement location="${ticketreservationsystem.testoutput.dir}"/>
+    <pathelement location="${ticketreservationsystem.output.dir}"/>
+    <path refid="library.mysql-connector-java-5.1.47.classpath"/>
+    <path refid="library.controlsfx-8.40.14.classpath"/>
+    <path refid="library.jfoenix-8.0.8.classpath"/>
+    <path refid="library.charm-glisten-4.4.1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.ticketreservationsystem">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.ticketreservationsystem">
+    <patternset refid="excluded.from.module.ticketreservationsystem"/>
+  </patternset>
+  
+  <path id="ticketreservationsystem.module.sourcepath">
+    <dirset dir="${module.ticketreservationsystem.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.ticketreservationsystem" depends="compile.module.ticketreservationsystem.production,compile.module.ticketreservationsystem.tests" description="Compile module TicketReservationSystem"/>
+  
+  <target name="compile.module.ticketreservationsystem.production" depends="register.custom.compilers" description="Compile module TicketReservationSystem; production classes">
+    <mkdir dir="${ticketreservationsystem.output.dir}"/>
+    <javac2 destdir="${ticketreservationsystem.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.ticketreservationsystem}/javac">
+      <compilerarg line="${compiler.args.ticketreservationsystem}"/>
+      <bootclasspath refid="ticketreservationsystem.module.bootclasspath"/>
+      <classpath refid="ticketreservationsystem.module.production.classpath"/>
+      <src refid="ticketreservationsystem.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.ticketreservationsystem"/>
+    </javac2>
+    
+    <copy todir="${ticketreservationsystem.output.dir}">
+      <fileset dir="${module.ticketreservationsystem.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.ticketreservationsystem.tests" depends="register.custom.compilers,compile.module.ticketreservationsystem.production" description="compile module TicketReservationSystem; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.ticketreservationsystem" description="cleanup module">
+    <delete dir="${ticketreservationsystem.output.dir}"/>
+    <delete dir="${ticketreservationsystem.testoutput.dir}"/>
+  </target>
+</project>

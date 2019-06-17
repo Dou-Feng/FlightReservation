@@ -155,6 +155,7 @@ public class ManagerController implements Initializable {
             }
             conn.commit(); // 提交ß
         }catch (Exception e) {
+            System.out.println(e.getMessage());
             ReservationController.showDialog("添加失败");
         }
 
@@ -213,6 +214,7 @@ public class ManagerController implements Initializable {
             }
             conn.commit();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             ReservationController.showDialog("添加航班信息失败");
         }
     }
@@ -283,6 +285,7 @@ public class ManagerController implements Initializable {
             }
             conn.commit();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             ReservationController.showDialog("添加座位信息失败");
         }
     }
